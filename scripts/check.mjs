@@ -1,4 +1,5 @@
 import { readFile, stat } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
@@ -195,10 +196,64 @@ async function main() {
     'api/send.php',
     'api/subscribe.php',
     'api/.htaccess',
+    '.htaccess',
+    'nginx.conf',
+    'robots.txt',
+    'sitemap.xml',
+    'assets/config/csp-script-hashes.conf',
+    'src/server/htaccess.template',
+    'src/server/nginx.conf.template',
+    'README.md',
+    'DEPLOY.md',
+    'SECURITY.md',
+    'scripts/backup.sh',
+    'assets/config/.htaccess',
+    'backup/.htaccess',
+    'backup/.gitkeep',
+    'img/objects/README.md',
+    'video/README.md',
+    'TODO-CONTENT.md',
+    'TODO-REQUISITES.md',
     ...htmlFiles
   ];
   for (const file of required) check(await exists(file), `Missing required file: ${file}`);
   for (const file of htmlFiles) if (await exists(file)) await checkHtml(file);
+
+  const expectedCspHashes = new Set();
+  for (const file of htmlFiles.filter((name) => name !== 'properties.html')) {
+    const source = await text(file);
+    for (const match of source.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
+      expectedCspHashes.add(`'sha256-${createHash('sha256').update(match[1], 'utf8').digest('base64')}'`);
+    }
+  }
+  const cspConfig = await text('assets/config/csp-script-hashes.conf');
+  for (const hash of expectedCspHashes) check(cspConfig.includes(hash), `CSP config is missing JSON-LD hash ${hash}`);
+  const htaccess = await text('.htaccess');
+  const nginx = await text('nginx.conf');
+  for (const file of ['.htaccess', 'nginx.conf', 'src/server/htaccess.template', 'src/server/nginx.conf.template']) {
+    const source = await text(file);
+    if (!file.startsWith('src/server/')) check(!/__[A-Z_]+__/.test(source), `${file}: unresolved infrastructure template token`);
+    check(!/fonts\.googleapis|fonts\.gstatic/.test(source), `${file}: external font origin found`);
+    for (const directive of ['X-Content-Type-Options', 'X-Frame-Options', 'Referrer-Policy', 'Permissions-Policy', 'Strict-Transport-Security', 'Content-Security-Policy']) {
+      check(source.includes(directive), `${file}: missing ${directive}`);
+    }
+    for (const privatePath of ['app', 'config', 'logs', 'storage', 'backup', 'src', 'scripts', 'tests', 'node_modules', 'vendor']) {
+      check(source.includes(privatePath), `${file}: missing private path rule for ${privatePath}`);
+    }
+  }
+  check((htaccess.match(/sha256-/g) || []).length === expectedCspHashes.size, '.htaccess: CSP hash count does not match generated pages');
+  check(nginx.includes('csp-script-hashes.conf'), 'nginx.conf: CSP hash include is missing');
+
+  const site = JSON.parse(await text('src/data/site.json'));
+  const robots = await text('robots.txt');
+  check(robots.includes(`Sitemap: ${new URL('/sitemap.xml', site.baseUrl).href}`), 'robots.txt: canonical sitemap is missing');
+  check(robots.includes('Disallow: /api/'), 'robots.txt: API path is not disallowed');
+  const sitemap = await text('sitemap.xml');
+  const locations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
+  check(locations.length >= 20, `sitemap.xml: expected at least 20 URLs, got ${locations.length}`);
+  check(new Set(locations).size === locations.length, 'sitemap.xml: duplicate URLs found');
+  check(locations.every((url) => url.startsWith('https://')), 'sitemap.xml: non-HTTPS URL found');
+  check(!locations.some((url) => /\/(?:404|500)\.html$|\/properties\.html$/.test(url)), 'sitemap.xml: redirect/error page included');
 
   const runtimeFiles = ['assets/js/main.js', 'assets/js/main.min.js'];
   for (const file of runtimeFiles) {
