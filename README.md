@@ -97,6 +97,8 @@ npm run check          # static/link/SEO/security checks
 npm run test:smoke     # all routes at 375/768/1440, Back/direct/no-JS
 npm run test:e2e       # panels, lightbox, favorites, compare, search
 npm run test:php       # CSRF, forms, limits, double-opt-in, logs
+npm run test:a11y       # axe-core desktop/mobile
+npm run lighthouse      # local lab Lighthouse; not PSI field data
 npm audit              # dependency audit
 ./build.sh             # CI-style build and test entry point
 ```
@@ -128,7 +130,7 @@ Generated pages contain unique metadata, canonical URLs, Open Graph/Twitter tags
 
 ## Security and deployment
 
-Read `SECURITY.md` and `DEPLOY.md` before configuring a server. The generated `.htaccess`, `nginx.conf`, CSP hash include, `robots.txt`, and `sitemap.xml` are build outputs. Review them after every content/data build.
+Read `SECURITY.md`, `DEPLOY.md`, and `DEPLOY-CHECKLIST.md` before configuring a server. The generated `.htaccess`, `nginx.conf`, CSP hash include, `robots.txt`, and `sitemap.xml` are build outputs. Review them after every content/data build. Audit results are in `TEST-REPORT.md`, `SECURITY-REPORT.md`, `LEGAL-REPORT.md`, and `PERFORMANCE-REPORT.md`.
 
 ## License and legal status
 

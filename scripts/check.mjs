@@ -214,6 +214,13 @@ async function main() {
     'video/README.md',
     'TODO-CONTENT.md',
     'TODO-REQUISITES.md',
+    'TODO-LIST.md',
+    'DEPLOY-CHECKLIST.md',
+    'CHANGELOG.md',
+    'TEST-REPORT.md',
+    'SECURITY-REPORT.md',
+    'LEGAL-REPORT.md',
+    'PERFORMANCE-REPORT.md',
     ...htmlFiles
   ];
   for (const file of required) check(await exists(file), `Missing required file: ${file}`);
