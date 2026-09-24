@@ -13,7 +13,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 button{min-height:44px;cursor:pointer}
 a{color:inherit;text-decoration-thickness:1px;text-underline-offset:.18em}
 h1,h2,h3,h4,p{margin-top:0}
-h1,h2,h3{font-family:var(--font-display);font-weight:400;line-height:1.04;letter-spacing:-.025em}
+h1,h2,h3{font-family:var(--font-display);font-weight:400;line-height:1.04;letter-spacing:-.025em;hanging-punctuation:first last}
 h1,h2,h3,.balanced{text-wrap:balance}
 p,.prose{text-wrap:pretty}
 .shell{width:var(--shell);margin-inline:auto}
@@ -42,6 +42,7 @@ p,.prose{text-wrap:pretty}
 .home-hero h1{max-width:16ch;margin-bottom:0;font-size:clamp(3rem,7.2vw,7.75rem);line-height:.92;letter-spacing:-.035em}
 .home-hero__lead{max-width:52ch;margin-bottom:0;color:#e6e6e6;font-size:clamp(1.05rem,1.7vw,1.4rem)}
 .home-hero .data-notice{max-width:62ch;background:#1a1a1a;color:#f3f3f3;border-color:#d6aa78}
+.home-hero :focus-visible{outline-color:#fff}
 .button-row{display:flex;flex-wrap:wrap;gap:12px}
 .button{min-height:48px;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 20px;border:1px solid currentColor;background:#111;color:#fff;text-decoration:none;font-size:.76rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
 .button:hover{background:#fff;color:#111}

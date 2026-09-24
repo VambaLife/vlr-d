@@ -1,6 +1,7 @@
 import { readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import sharp from 'sharp';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const failures = [];
@@ -27,7 +28,9 @@ async function main() {
     'assets/fonts/cormorant-cyrillic.woff2',
     'assets/fonts/cormorant-latin.woff2',
     'assets/fonts/Manrope-OFL.txt',
-    'assets/fonts/CormorantGaramond-OFL.txt'
+    'assets/fonts/CormorantGaramond-OFL.txt',
+    'img/og-default.jpg',
+    'img/dmitrov-poster.jpg'
   ];
   for (const file of required) check(await exists(file), `Missing required file: ${file}`);
 
@@ -55,6 +58,17 @@ async function main() {
     check(!/document\.write\s*\(/.test(source), `${file}: document.write found`);
     check(!/\.innerHTML\s*=/.test(source), `${file}: innerHTML assignment found`);
     check(!/\.outerHTML\s*=/.test(source), `${file}: outerHTML assignment found`);
+  }
+
+  const imageDimensions = new Map([
+    ['img/og-default.jpg', [1200, 630]],
+    ['img/dmitrov-poster.jpg', [1920, 1080]]
+  ]);
+  for (const [file, expected] of imageDimensions) {
+    if (!await exists(file)) continue;
+    const metadata = await sharp(path.join(root, file)).metadata();
+    check(metadata.width === expected[0] && metadata.height === expected[1], `${file}: expected ${expected.join('x')}, got ${metadata.width}x${metadata.height}`);
+    check(metadata.format === 'jpeg', `${file}: expected JPEG, got ${metadata.format}`);
   }
 
   for (const file of [

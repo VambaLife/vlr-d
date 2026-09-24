@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import CleanCSS from 'clean-css';
 import { minify as minifyHtml } from 'html-minifier-terser';
 import { minify as minifyJs } from 'terser';
+import { ensureMediaAssets } from './generate-assets.mjs';
 import {
   assertNoUnresolvedTokens,
   metaDescriptionForHome,
@@ -41,6 +42,9 @@ async function buildPage({ layout, header, footer, cookieBanner, overlays, pageT
   const title = 'Недвижимость в Дмитровском округе — ВЛР-Дмитров';
   const description = metaDescriptionForHome();
   const canonical = `${site.baseUrl}/`;
+  const ogImageUrl = new URL(site.ogImage, site.baseUrl).href;
+  const ogImageBlock = `<meta property="og:image" content="${ogImageUrl}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="ВЛР-Дмитров — агентство недвижимости в Дмитровском округе">`;
+  const twitterImageBlock = `<meta name="twitter:image" content="${ogImageUrl}"><meta name="twitter:image:alt" content="ВЛР-Дмитров — агентство недвижимости">`;
   const html = replaceTokens(layout, {
     lang: 'ru',
     title,
@@ -49,8 +53,8 @@ async function buildPage({ layout, header, footer, cookieBanner, overlays, pageT
     canonical,
     ogType: 'website',
     siteName: site.brandName,
-    ogImageBlock: '',
-    twitterImageBlock: '',
+    ogImageBlock,
+    twitterImageBlock,
     schemaJson: safeJson(schemaForHome(site)),
     criticalCss,
     bodyClass: 'page-home',
@@ -88,6 +92,7 @@ async function buildPage({ layout, header, footer, cookieBanner, overlays, pageT
 }
 
 async function main() {
+  await ensureMediaAssets();
   const [site, properties, layout, header, footer, cookieBanner, overlays, pageTemplate, criticalSource, cssSource, jsSource] = await Promise.all([
     readJson('src/data/site.json'),
     readJson('src/data/properties.json'),
