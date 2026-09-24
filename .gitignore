@@ -1,0 +1,44 @@
+# Dependencies
+/node_modules/
+/vendor/
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+
+# Runtime data
+/logs/*.log
+/storage/*.sqlite
+/storage/*.sqlite-*
+/cache/
+/tmp/
+
+# Backups and local archives
+/backup/*
+!/backup/.gitkeep
+*.zip
+*.tar
+*.tar.gz
+
+# Test and audit output
+/.lighthouseci/
+/playwright-report/
+/test-results/
+/coverage/
+npm-debug.log*
+
+# Editors and operating systems
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.tmp
+*.bak
+*~

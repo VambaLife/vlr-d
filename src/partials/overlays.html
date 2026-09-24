@@ -1,0 +1,47 @@
+<div class="panel-backdrop" data-panel-backdrop hidden></div>
+
+<aside class="side-panel" id="menu-panel" role="dialog" aria-modal="true" aria-labelledby="menu-panel-title" data-panel="menu-panel" hidden>
+  <div class="side-panel__header">
+    <h2 id="menu-panel-title">Меню</h2>
+    <button class="icon-button icon-button--dark" type="button" data-panel-close aria-label="Закрыть меню">
+      <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m5 5 14 14M19 5 5 19"/></svg>
+    </button>
+  </div>
+  <nav class="side-panel__nav" aria-label="Мобильная навигация">
+    <a href="/properties/">Объекты</a>
+    <a href="/properties/flats.html">Квартиры</a>
+    <a href="/properties/houses.html">Дома</a>
+    <a href="/properties/commercial.html">Коммерция</a>
+    <a href="/properties/rent.html">Аренда</a>
+    <a href="/about.html">Агентство</a>
+    <a href="/faq.html">Вопросы</a>
+    <a href="/requisites.html">Реквизиты</a>
+  </nav>
+</aside>
+
+<aside class="side-panel" id="contact-panel" role="dialog" aria-modal="true" aria-labelledby="contact-panel-title" data-panel="contact-panel" hidden>
+  <div class="side-panel__header">
+    <h2 id="contact-panel-title">Связаться</h2>
+    <button class="icon-button icon-button--dark" type="button" data-panel-close aria-label="Закрыть форму">
+      <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m5 5 14 14M19 5 5 19"/></svg>
+    </button>
+  </div>
+  <div class="side-panel__body">
+    <p class="data-notice">Форма будет доступна после подтверждения адреса электронной почты оператора.</p>
+    <a class="button button--full" href="tel:+79257357762">Позвонить +7 (925) 735-77-62</a>
+  </div>
+</aside>
+
+<aside class="search-panel" id="search-panel" role="dialog" aria-modal="true" aria-labelledby="search-panel-title" data-panel="search-panel" hidden>
+  <div class="side-panel__header">
+    <h2 id="search-panel-title">Поиск объектов</h2>
+    <button class="icon-button icon-button--dark" type="button" data-panel-close aria-label="Закрыть поиск">
+      <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m5 5 14 14M19 5 5 19"/></svg>
+    </button>
+  </div>
+  <form class="search-form" action="/search.html" method="get" data-search-form>
+    <label for="search-query">Название или адрес</label>
+    <input id="search-query" name="q" type="search" maxlength="100" autocomplete="off">
+    <button class="button" type="submit">Найти</button>
+  </form>
+</aside>

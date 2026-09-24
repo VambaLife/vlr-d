@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">ВЛР-Дмитров</title>
+  <rect width="64" height="64" fill="#000"/>
+  <path d="M13 14h9l10 27 10-27h9L36 51h-8L13 14Z" fill="#fff"/>
+  <path d="M13 55h38" stroke="#b9855b" stroke-width="3"/>
+</svg>

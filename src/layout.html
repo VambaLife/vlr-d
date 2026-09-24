@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#000000">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="{{description}}">
+  <meta name="robots" content="{{robots}}">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>{{title}}</title>
+  <link rel="canonical" href="{{canonical}}">
+  <link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="/assets/css/style.min.css" as="style">
+  <link rel="preload" href="/assets/fonts/manrope-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/cormorant-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/js/main.min.js" as="script">
+  <meta property="og:type" content="{{ogType}}">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:site_name" content="{{siteName}}">
+  <meta property="og:title" content="{{title}}">
+  <meta property="og:description" content="{{description}}">
+  <meta property="og:url" content="{{canonical}}">
+  {{ogImageBlock}}
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{title}}">
+  <meta name="twitter:description" content="{{description}}">
+  {{twitterImageBlock}}
+  <script type="application/ld+json">{{schemaJson}}</script>
+  <style>{{criticalCss}}</style>
+  <script src="/assets/js/main.min.js" defer></script>
+  <noscript><link rel="stylesheet" href="/assets/css/style.min.css"></noscript>
+</head>
+<body class="{{bodyClass}}" data-page="{{pageKey}}">
+  <a class="skip-link" href="#main-content">Перейти к основному содержанию</a>
+  {{header}}
+  <main id="main-content" tabindex="-1">
+    {{content}}
+  </main>
+  {{footer}}
+  {{cookieBanner}}
+  {{overlays}}
+  <noscript>
+    <p class="noscript-note">Часть интерактивных функций недоступна без JavaScript. Номер телефона и основные страницы продолжают работать.</p>
+  </noscript>
+</body>
+</html>

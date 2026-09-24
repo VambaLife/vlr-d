@@ -1,0 +1,29 @@
+{
+  "name": "vlr-dmitrov-real-estate",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Production static frontend and PHP endpoints for VLR-Dmitrov",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "dev": "node scripts/serve.mjs",
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/check.mjs",
+    "test": "npm run build && npm run check",
+    "audit:prod": "npm audit --omit=dev --audit-level=high",
+    "test:a11y": "node tests/a11y.mjs",
+    "test:e2e": "node tests/e2e.mjs",
+    "lighthouse": "node tests/lighthouse.mjs"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "clean-css": "5.3.3",
+    "html-minifier-terser": "7.2.0",
+    "lighthouse": "13.5.0",
+    "playwright": "1.63.0",
+    "sharp": "0.35.4",
+    "terser": "5.51.2"
+  }
+}

@@ -1,0 +1,63 @@
+<footer class="site-footer">
+  <div class="shell site-footer__grid">
+    <section class="footer-section" data-footer-accordion>
+      <h2 class="footer-section__title"><button type="button" aria-expanded="false" aria-controls="footer-navigation">Навигация</button></h2>
+      <div class="footer-section__content" id="footer-navigation">
+        <a href="/properties/">Все объекты</a>
+        <a href="/about.html">Об агентстве</a>
+        <a href="/faq.html">Частые вопросы</a>
+        <a href="/sitemap.html">Карта сайта</a>
+        <a href="/account/favorites.html">Избранное</a>
+      </div>
+    </section>
+
+    <section class="footer-section" data-footer-accordion>
+      <h2 class="footer-section__title"><button type="button" aria-expanded="false" aria-controls="footer-documents">Документы</button></h2>
+      <div class="footer-section__content" id="footer-documents">
+        <a href="/privacy.html">Политика конфиденциальности</a>
+        <a href="/consent.html">Согласие на обработку ПДн</a>
+        <a href="/terms.html">Пользовательское соглашение</a>
+        <a href="/ethical.html">Кодекс этики</a>
+        <a href="/requisites.html">Реквизиты</a>
+      </div>
+    </section>
+
+    <section class="footer-section footer-contact">
+      <p class="eyebrow">Связаться</p>
+      <a class="footer-contact__phone" href="tel:+79257357762">+7 (925) 735-77-62</a>
+      <p>Ежедневно с 10:00 до 18:00</p>
+      <button class="text-link" type="button" data-panel-open="contact-panel">Оставить заявку</button>
+    </section>
+
+    <section class="footer-section footer-subscribe">
+      <h2 class="footer-section__title footer-section__title--static">Новые объекты</h2>
+      <p>Получайте письма после подтверждения адреса. Отписка доступна в каждом письме.</p>
+      <form action="/api/subscribe.php" method="post" data-async-form="subscribe" novalidate>
+        <div class="honeypot" aria-hidden="true">
+          <label for="subscribe-website">Не заполняйте это поле</label>
+          <input id="subscribe-website" name="website" type="text" tabindex="-1" autocomplete="off">
+        </div>
+        <input type="hidden" name="csrf_token" value="" data-csrf-token>
+        <label class="field-label" for="subscribe-email">Электронная почта</label>
+        <div class="email-field">
+          <input id="subscribe-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="254" required aria-describedby="subscribe-help subscribe-status">
+          <button type="submit">Подписаться</button>
+        </div>
+        <label class="checkbox-field">
+          <input name="consent" type="checkbox" value="1" required>
+          <span>Я согласен на обработку email для рассылки. Подробнее — в <a href="/consent.html">согласии</a> и <a href="/privacy.html">политике</a>.</span>
+        </label>
+        <p class="field-help" id="subscribe-help">Письмо с подтверждением придёт по указанному адресу.</p>
+        <p class="form-status" id="subscribe-status" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+  </div>
+
+  <div class="shell site-footer__legal">
+    <!-- TODO: real data -->
+    <p>Оператор: наименование, ОГРН, ИНН, адрес и email уточняются.</p>
+    <p>Уведомление в Роскомнадзор: подача не подтверждена.</p>
+    <p>Документы опубликованы: <time datetime="2026-09-24">24 сентября 2026 года</time>.</p>
+    <p>© 2026 ВЛР-Дмитров. Информация на сайте не является публичной офертой.</p>
+  </div>
+</footer>
