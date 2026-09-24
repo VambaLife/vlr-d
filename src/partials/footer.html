@@ -32,7 +32,7 @@
     <section class="footer-section footer-subscribe">
       <h2 class="footer-section__title footer-section__title--static">Новые объекты</h2>
       <p>Получайте письма после подтверждения адреса. Отписка доступна в каждом письме.</p>
-      <form action="/api/subscribe.php" method="post" data-async-form="subscribe" novalidate>
+      <form id="subscribeForm" action="/api/subscribe.php" method="post" data-async-form="subscribe" novalidate>
         <div class="honeypot" aria-hidden="true">
           <label for="subscribe-website">Не заполняйте это поле</label>
           <input id="subscribe-website" name="website" type="text" tabindex="-1" autocomplete="off">

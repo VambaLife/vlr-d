@@ -38,7 +38,7 @@ const htmlMinifierOptions = {
   quoteCharacter: '"',
   removeComments: false,
   removeEmptyAttributes: false,
-  removeRedundantAttributes: true,
+  removeRedundantAttributes: false,
   removeScriptTypeAttributes: false,
   removeStyleLinkTypeAttributes: true,
   sortAttributes: true,

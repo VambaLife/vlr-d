@@ -1,0 +1,20 @@
+Options -Indexes -MultiViews
+ServerSignature Off
+
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+<FilesMatch "\.(?:env|ini|log|sqlite|sqlite-wal|sqlite-shm|md|json|xml)$">
+    Require all denied
+</FilesMatch>
+
+<FilesMatch "\.(?!php$)[^.]+$">
+    Require all denied
+</FilesMatch>
+
+<FilesMatch "\.php$">
+    Require all granted
+</FilesMatch>
+
+LimitRequestBody 65536

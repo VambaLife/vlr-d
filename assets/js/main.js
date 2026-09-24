@@ -637,6 +637,109 @@
     apply(new URL(window.location.href).searchParams);
   }
 
+  let csrfTokenPromise = null;
+
+  function csrfToken() {
+    if (!csrfTokenPromise) {
+      csrfTokenPromise = fetch('/api/csrf.php', {
+        method: 'GET',
+        credentials: 'same-origin',
+        cache: 'no-store',
+        headers: { Accept: 'application/json' }
+      }).then(function (response) {
+        if (!response.ok) throw new Error('csrf');
+        return response.json();
+      }).then(function (payload) {
+        if (!payload.ok || typeof payload.token !== 'string' || !/^[a-f0-9]{64}$/.test(payload.token)) throw new Error('csrf');
+        return payload.token;
+      }).catch(function (error) {
+        csrfTokenPromise = null;
+        throw error;
+      });
+    }
+    return csrfTokenPromise;
+  }
+
+  function setFormStatus(form, message, state) {
+    const status = form.querySelector('[role="status"]');
+    if (!status) return;
+    status.textContent = message;
+    status.dataset.state = state || '';
+  }
+
+  function clearFormErrors(form) {
+    form.querySelectorAll('[aria-invalid="true"]').forEach(function (field) { field.removeAttribute('aria-invalid'); });
+  }
+
+  function showFormErrors(form, errors) {
+    let firstInvalid = null;
+    Object.entries(errors || {}).forEach(function (entry) {
+      const field = form.elements.namedItem(entry[0]);
+      if (!field || !field.setAttribute) return;
+      field.setAttribute('aria-invalid', 'true');
+      if (!firstInvalid) firstInvalid = field;
+    });
+    if (firstInvalid) focusWithoutScroll(firstInvalid);
+  }
+
+  function initAsyncForms() {
+    const forms = Array.from(document.querySelectorAll('[data-async-form]'));
+    if (!forms.length) return;
+    const propertyMatch = window.location.pathname.match(/^\/property\/([a-z0-9-]{1,80})\.html$/i);
+    forms.forEach(function (form) {
+      form.setAttribute('aria-busy', 'false');
+      form.addEventListener('focusin', function () { csrfToken().catch(function () {}); }, { once: true });
+      form.addEventListener('submit', async function (event) {
+        event.preventDefault();
+        clearFormErrors(form);
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          setFormStatus(form, 'Проверьте обязательные поля формы.', 'error');
+          return;
+        }
+        const submit = form.querySelector('button[type="submit"]');
+        if (submit) submit.disabled = true;
+        form.setAttribute('aria-busy', 'true');
+        setFormStatus(form, 'Отправка…', '');
+        try {
+          const token = await csrfToken();
+          const tokenField = form.querySelector('[data-csrf-token]');
+          if (tokenField) tokenField.value = token;
+          if (form.dataset.asyncForm === 'contact' && propertyMatch) {
+            const property = form.querySelector('[data-contact-property]');
+            if (property) property.value = propertyMatch[1].toLowerCase();
+          }
+          const response = await fetch(form.action, {
+            method: 'POST',
+            body: new FormData(form),
+            credentials: 'same-origin',
+            cache: 'no-store',
+            headers: { Accept: 'application/json' }
+          });
+          const payload = await response.json().catch(function () { return { ok: false, message: 'Сервер вернул некорректный ответ.' }; });
+          if (response.status === 403) csrfTokenPromise = null;
+          if (!response.ok || !payload.ok) {
+            if (payload.errors) showFormErrors(form, payload.errors);
+            throw new Error(payload.message || 'Не удалось отправить форму.');
+          }
+          form.reset();
+          clearFormErrors(form);
+          setFormStatus(form, payload.message || 'Форма отправлена.', 'success');
+          announce(payload.message || 'Форма отправлена.');
+        } catch (error) {
+          const serviceError = error instanceof TypeError || (error instanceof Error && error.message === 'csrf');
+          const message = serviceError
+            ? 'Сервис формы временно недоступен. Позвоните по телефону +7 (925) 735-77-62.'
+            : (error instanceof Error ? error.message : 'Не удалось отправить форму. Проверьте соединение.');
+          setFormStatus(form, message, 'error');
+        } finally {
+          if (submit) submit.disabled = false;
+          form.setAttribute('aria-busy', 'false');
+        }
+      });
+    });
+  }
+
   window.addEventListener('storage', function (event) {
     if (event.key === 'vlr:v1:favorites' || event.key === null) favoriteStore.refresh();
     if (event.key === 'vlr:v1:compare' || event.key === null) compareStore.refresh();
@@ -647,6 +750,7 @@
   initFooterAccordions();
   initPanels();
   initLightbox();
+  initAsyncForms();
   initFavorites();
   initCompare();
   initSearch();

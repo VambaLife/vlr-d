@@ -115,6 +115,12 @@ async function checkHtml(file) {
   const imageTags = [...source.matchAll(/<img\b[^>]*>/gi)].map((match) => match[0]);
   for (const image of imageTags) check(/\balt="[^"]*"/i.test(image), `${file}: img without alt: ${image.slice(0, 120)}`);
 
+  if (!isRedirect) {
+    for (const id of ['subscribeForm', 'subscribe-email', 'subscribe-status', 'contact-panel', 'contact-status']) {
+      check(ids.includes(id), `${file}: required id #${id} is missing`);
+    }
+  }
+
   const h1Count = (source.match(/<h1\b/gi) || []).length;
   if (!isRedirect) check(h1Count === 1, `${file}: expected exactly one h1, got ${h1Count}`);
   const mainCount = (source.match(/<main\b/gi) || []).length;
@@ -160,7 +166,6 @@ async function checkHtml(file) {
     const attrs = attributes(tag);
     const reference = attrs.get('href') || attrs.get('src') || attrs.get('action');
     if (attrs.has('target') && attrs.get('target') === '_blank') check(/\brel="[^"]*\bnoopener\b/i.test(tag), `${file}: target=_blank without noopener`);
-    if (reference.startsWith('/api/')) continue;
     const local = localTarget(reference, file);
     if (!local) continue;
     const linkedFile = targetFile(local.pathname);
@@ -186,6 +191,10 @@ async function main() {
     'img/og-default.jpg',
     'img/dmitrov-poster.jpg',
     'favicon.ico',
+    'api/csrf.php',
+    'api/send.php',
+    'api/subscribe.php',
+    'api/.htaccess',
     ...htmlFiles
   ];
   for (const file of required) check(await exists(file), `Missing required file: ${file}`);

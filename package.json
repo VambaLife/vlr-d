@@ -11,11 +11,12 @@
     "dev": "node scripts/serve.mjs",
     "build": "node scripts/build.mjs",
     "check": "node scripts/check.mjs",
-    "test": "npm run build && npm run check && npm run test:smoke && npm run test:e2e",
+    "test": "npm run build && npm run check && npm run test:smoke && npm run test:e2e && npm run test:php",
     "audit:prod": "npm audit --omit=dev --audit-level=high",
     "test:smoke": "node tests/smoke-pages.mjs",
     "test:a11y": "node tests/a11y.mjs",
     "test:e2e": "node tests/e2e.mjs",
+    "test:php": "node tests/php-api.mjs",
     "lighthouse": "node tests/lighthouse.mjs"
   },
   "devDependencies": {

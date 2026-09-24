@@ -27,8 +27,38 @@
     </button>
   </div>
   <div class="side-panel__body">
-    <p class="data-notice">Форма будет доступна после подтверждения адреса электронной почты оператора.</p>
-    <a class="button button--full" href="tel:+79257357762">Позвонить +7 (925) 735-77-62</a>
+    <p class="data-notice">Все поля обязательны. Данные используются только для ответа на обращение.</p>
+    <form class="contact-form" action="/api/send.php" method="post" data-async-form="contact" novalidate>
+      <div class="honeypot" aria-hidden="true">
+        <label for="contact-website">Не заполняйте это поле</label>
+        <input id="contact-website" name="website" type="text" tabindex="-1" autocomplete="off">
+      </div>
+      <input type="hidden" name="csrf_token" value="" data-csrf-token>
+      <input type="hidden" name="property" value="" data-contact-property>
+      <div class="field-group">
+        <label for="contact-name">Имя</label>
+        <input id="contact-name" name="name" type="text" autocomplete="name" maxlength="100" required aria-describedby="contact-status">
+      </div>
+      <div class="field-group">
+        <label for="contact-phone">Телефон</label>
+        <input id="contact-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="40" placeholder="+7 (999) 123-45-67" required aria-describedby="contact-status">
+      </div>
+      <div class="field-group">
+        <label for="contact-email">Электронная почта</label>
+        <input id="contact-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="254" required aria-describedby="contact-status">
+      </div>
+      <div class="field-group">
+        <label for="contact-message">Сообщение <span class="optional">— необязательно</span></label>
+        <textarea id="contact-message" name="message" rows="5" maxlength="2000" aria-describedby="contact-status"></textarea>
+      </div>
+      <label class="checkbox-field checkbox-field--dark">
+        <input name="consent" type="checkbox" value="1" required>
+        <span>Я согласен на обработку данных для ответа на обращение. Подробнее — в <a href="/consent.html">согласии</a> и <a href="/privacy.html">политике</a>.</span>
+      </label>
+      <p class="form-status" id="contact-status" role="status" aria-live="polite"></p>
+      <button class="button button--full" type="submit">Отправить заявку</button>
+    </form>
+    <a class="button button--secondary button--full" href="tel:+79257357762">Позвонить +7 (925) 735-77-62</a>
   </div>
 </aside>
 
