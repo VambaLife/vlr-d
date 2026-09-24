@@ -1,0 +1,73 @@
+<section class="content-hero content-hero--compact">
+  <div class="shell content-hero__inner">
+    <p class="eyebrow">Каталог</p>
+    <h1>Поиск объектов</h1>
+    <p class="content-hero__lead">Фильтры изменяют существующие карточки без перезагрузки. Параметры сохраняются в URL.</p>
+  </div>
+</section>
+
+<section class="content-section">
+  <div class="shell search-layout">
+    <form class="filter-form" action="/search.html" method="get" data-search-page-form>
+      <h2>Параметры</h2>
+      <div class="field-group">
+        <label for="filter-query">Название или адрес</label>
+        <input id="filter-query" name="q" type="search" maxlength="100" autocomplete="off">
+      </div>
+      <div class="field-group">
+        <label for="filter-type">Тип</label>
+        <select id="filter-type" name="type">
+          <option value="">Любой</option>
+          <option value="flat">Квартира</option>
+          <option value="house">Дом</option>
+          <option value="commercial">Коммерция</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label for="filter-deal">Сделка</label>
+        <select id="filter-deal" name="deal">
+          <option value="">Любая</option>
+          <option value="sale">Продажа</option>
+          <option value="rent">Аренда</option>
+        </select>
+      </div>
+      <fieldset class="filter-fieldset" disabled>
+        <legend>Расширенные фильтры</legend>
+        <p id="advanced-filter-note">Цена, площадь и район будут доступны после добавления проверенных значений. Поля не применяют фиктивные данные.</p>
+        <label for="filter-price-min">Цена от, ₽</label>
+        <input id="filter-price-min" name="price_min" type="number" min="0" inputmode="numeric" disabled>
+        <label for="filter-price-max">Цена до, ₽</label>
+        <input id="filter-price-max" name="price_max" type="number" min="0" inputmode="numeric" disabled>
+        <label for="filter-area-min">Площадь от, м²</label>
+        <input id="filter-area-min" name="area_min" type="number" min="0" inputmode="decimal" disabled>
+        <label for="filter-area-max">Площадь до, м²</label>
+        <input id="filter-area-max" name="area_max" type="number" min="0" inputmode="decimal" disabled>
+        <label for="filter-district">Район</label>
+        <select id="filter-district" name="district" disabled><option value="">Данные уточняются</option></select>
+      </fieldset>
+      <div class="filter-actions">
+        <button class="button" type="submit">Применить</button>
+        <a class="text-link" href="/search.html">Сбросить</a>
+      </div>
+      <noscript><p>Фильтрация списка требует JavaScript. Основные карточки и ссылки остаются доступными.</p></noscript>
+    </form>
+
+    <section class="search-results" aria-labelledby="search-results-heading">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Результат</p>
+          <h2 id="search-results-heading">Объекты</h2>
+        </div>
+        <p class="result-count" role="status" aria-live="polite" data-result-count>Найдено: 6</p>
+      </div>
+      <div class="editorial-grid" data-property-grid>
+        {{propertyCards}}
+      </div>
+      <div class="empty-state" data-empty-state hidden>
+        <h3>Объекты не найдены</h3>
+        <p>Измените условия или сбросьте фильтры.</p>
+        <a class="text-link" href="/search.html">Сбросить фильтры</a>
+      </div>
+    </section>
+  </div>
+</section>

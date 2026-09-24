@@ -34,6 +34,15 @@
 <body class="{{bodyClass}}" data-page="{{pageKey}}">
   <a class="skip-link" href="#main-content">Перейти к основному содержанию</a>
   {{header}}
+  <noscript>
+    <nav class="noscript-nav" aria-label="Навигация без JavaScript">
+      <a href="/properties/">Объекты</a>
+      <a href="/about.html">Агентство</a>
+      <a href="/faq.html">Вопросы</a>
+      <a href="/requisites.html">Реквизиты</a>
+      <a href="/search.html">Поиск</a>
+    </nav>
+  </noscript>
   <main id="main-content" tabindex="-1">
     {{content}}
   </main>

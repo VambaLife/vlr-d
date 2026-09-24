@@ -38,6 +38,7 @@
   document.querySelectorAll('[data-footer-accordion]').forEach(function (section) {
     const button = section.querySelector('button[aria-expanded]');
     if (!button) return;
+    button.hidden = false;
     const sync = function () {
       if (desktopQuery.matches) {
         section.classList.add('is-open');

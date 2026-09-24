@@ -1,0 +1,23 @@
+<div class="lightbox-backdrop" data-lightbox-backdrop hidden></div>
+<section class="lightbox" id="property-lightbox" role="dialog" aria-modal="true" aria-labelledby="lightbox-title" aria-describedby="lightbox-description" data-lightbox hidden tabindex="-1">
+  <div class="lightbox__header">
+    <h2 id="lightbox-title" class="visually-hidden">Просмотр фотографии</h2>
+    <p id="lightbox-description">Фотографии публикуются после проверки прав на материалы.</p>
+    <button class="icon-button icon-button--dark" type="button" data-lightbox-close aria-label="Закрыть просмотр фотографии">
+      <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m5 5 14 14M19 5 5 19"/></svg>
+    </button>
+  </div>
+  <div class="lightbox__stage" data-lightbox-stage>
+    <img class="lightbox__image" data-lightbox-image alt="" hidden>
+    <div class="lightbox__placeholder" data-lightbox-placeholder>
+      <span data-lightbox-placeholder-text>Фотография пока не предоставлена</span>
+    </div>
+    <button class="lightbox__nav lightbox__nav--previous" type="button" data-lightbox-prev aria-label="Предыдущая фотография">
+      <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+    </button>
+    <button class="lightbox__nav lightbox__nav--next" type="button" data-lightbox-next aria-label="Следующая фотография">
+      <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+    </button>
+    <p class="lightbox__counter" data-lightbox-counter role="status" aria-live="polite">Фото 1 из 8</p>
+  </div>
+</section>

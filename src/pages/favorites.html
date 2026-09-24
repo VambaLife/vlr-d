@@ -1,0 +1,54 @@
+<section class="content-hero content-hero--compact">
+  <div class="shell content-hero__inner">
+    <p class="eyebrow">Ваш браузер</p>
+    <h1>Избранное и сравнение</h1>
+    <p class="content-hero__lead">В localStorage сохраняются только идентификаторы объектов. Персональные данные сюда не записываются.</p>
+  </div>
+</section>
+
+<section class="content-section" aria-labelledby="favorites-heading">
+  <div class="shell">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">Сохранённые объекты</p>
+        <h2 id="favorites-heading">Избранное</h2>
+      </div>
+      <p class="result-count" role="status" aria-live="polite" data-favorite-count>Сохранено: 0</p>
+    </div>
+    <p class="storage-warning" data-storage-warning hidden>Браузер не разрешил постоянное сохранение. Выбор будет действовать только до закрытия страницы.</p>
+    <div class="editorial-grid" data-property-grid>
+      {{propertyCards}}
+    </div>
+    <div class="empty-state" data-favorites-empty>
+      <h3>Список пока пуст</h3>
+      <p>Отметьте объекты сердцем в каталоге.</p>
+      <a class="button" href="/properties/">Перейти к объектам</a>
+    </div>
+  </div>
+</section>
+
+<section class="content-section content-section--surface" aria-labelledby="compare-heading">
+  <div class="shell">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">До четырёх объектов</p>
+        <h2 id="compare-heading">Сравнение</h2>
+      </div>
+      <p class="result-count" role="status" aria-live="polite" data-compare-count>Выбрано: 0 из 4</p>
+    </div>
+    <div class="compare-scroll" tabindex="0" aria-label="Таблица сравнения объектов">
+      <table class="compare-table" data-compare-table>
+        <caption class="visually-hidden">Сравнение выбранных объектов недвижимости</caption>
+        <thead><tr><th scope="col">Параметр</th><th scope="col" data-compare-heading>Выберите объект</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Название</th><td data-compare-value="title">—</td></tr>
+          <tr><th scope="row">Локация</th><td data-compare-value="location">—</td></tr>
+          <tr><th scope="row">Тип</th><td data-compare-value="type">—</td></tr>
+          <tr><th scope="row">Сделка</th><td data-compare-value="deal">—</td></tr>
+          <tr><th scope="row">Характеристики</th><td data-compare-value="specs">Требуют проверки</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="data-notice" data-compare-note hidden>Можно сравнить не более четырёх объектов. Удалите один из выбранных, чтобы добавить другой.</p>
+  </div>
+</section>

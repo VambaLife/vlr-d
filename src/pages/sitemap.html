@@ -1,0 +1,33 @@
+<section class="content-hero">
+  <div class="shell content-hero__inner">
+    <p class="eyebrow">Навигация</p>
+    <h1>Карта сайта</h1>
+    <p class="content-hero__lead">Основные страницы, документы, категории и карточки объектов.</p>
+  </div>
+</section>
+
+<section class="content-section" aria-labelledby="sitemap-pages">
+  <div class="shell sitemap-columns">
+    <section>
+      <h2 id="sitemap-pages">Страницы</h2>
+      <nav class="sitemap-list" aria-label="Основные страницы">{{pageLinks}}</nav>
+    </section>
+    <section>
+      <h2>Категории</h2>
+      <nav class="sitemap-list" aria-label="Категории объектов">{{categoryLinks}}</nav>
+    </section>
+    <section>
+      <h2>Объекты</h2>
+      <nav class="sitemap-list" aria-label="Карточки объектов">{{propertyLinks}}</nav>
+    </section>
+    <section>
+      <h2>Клиентские разделы</h2>
+      <nav class="sitemap-list" aria-label="Клиентские разделы">
+        <a href="/search.html">Поиск</a>
+        <a href="/account/favorites.html">Избранное и сравнение</a>
+        <a href="/privacy.html">Политика конфиденциальности</a>
+        <a href="/consent.html">Согласие на обработку ПДн</a>
+      </nav>
+    </section>
+  </div>
+</section>
