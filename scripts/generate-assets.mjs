@@ -1,4 +1,4 @@
-import { mkdir, readFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
@@ -43,6 +43,19 @@ export async function ensureMediaAssets() {
     note: 'Каталог объектов · Дмитровский округ',
     fontData
   })).jpeg({ quality: 88, progressive: true, chromaSubsampling: '4:4:4' }).toFile(path.join(root, 'img/og-default.jpg'));
+
+  const iconPng = await sharp(path.join(root, 'assets/icons/favicon.svg')).resize(32, 32).png().toBuffer();
+  const iconHeader = Buffer.alloc(22);
+  iconHeader.writeUInt16LE(0, 0);
+  iconHeader.writeUInt16LE(1, 2);
+  iconHeader.writeUInt16LE(1, 4);
+  iconHeader.writeUInt8(32, 6);
+  iconHeader.writeUInt8(32, 7);
+  iconHeader.writeUInt16LE(1, 10);
+  iconHeader.writeUInt16LE(32, 12);
+  iconHeader.writeUInt32LE(iconPng.length, 14);
+  iconHeader.writeUInt32LE(22, 18);
+  await writeFile(path.join(root, 'favicon.ico'), Buffer.concat([iconHeader, iconPng]));
 
   await sharp(brandSvg({
     width: 1920,

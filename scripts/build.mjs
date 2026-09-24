@@ -100,6 +100,7 @@ async function renderLayout(context) {
     criticalCss,
     bodyClass: page.bodyClass || 'page-content',
     pageKey: page.key,
+    knownProperties: (context.site.knownProperties || []).join(','),
     header,
     content,
     footer,
@@ -158,6 +159,7 @@ async function main() {
     readText(root, 'assets/css/style.css'),
     readText(root, 'assets/js/main.js')
   ]);
+  site.knownProperties = properties.map((property) => property.slug);
 
   const criticalResult = await new CleanCSS({ level: 2 }).minify(criticalSource);
   if (criticalResult.errors.length) throw new Error(criticalResult.errors.join('\n'));

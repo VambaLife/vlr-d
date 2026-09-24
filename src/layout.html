@@ -31,8 +31,10 @@
   <script src="/assets/js/main.min.js" defer></script>
   <noscript><link rel="stylesheet" href="/assets/css/style.min.css"></noscript>
 </head>
-<body class="{{bodyClass}}" data-page="{{pageKey}}">
+<body class="{{bodyClass}}" data-page="{{pageKey}}" data-known-properties="{{knownProperties}}">
   <a class="skip-link" href="#main-content">Перейти к основному содержанию</a>
+  <div class="visually-hidden" role="status" aria-live="polite" data-global-status></div>
+  <div id="app-shell">
   {{header}}
   <noscript>
     <nav class="noscript-nav" aria-label="Навигация без JavaScript">
@@ -48,9 +50,10 @@
   </main>
   {{footer}}
   {{cookieBanner}}
-  {{overlays}}
   <noscript>
     <p class="noscript-note">Часть интерактивных функций недоступна без JavaScript. Номер телефона и основные страницы продолжают работать.</p>
   </noscript>
+  </div>
+  {{overlays}}
 </body>
 </html>

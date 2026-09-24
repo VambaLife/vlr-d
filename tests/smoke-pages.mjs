@@ -58,7 +58,7 @@ async function run() {
     const page = await context.newPage();
     const consoleErrors = [];
     const badResponses = [];
-    page.on('console', (message) => { if (message.type() === 'error') consoleErrors.push(message.text()); });
+    page.on('console', (message) => { if (message.type() === 'error') consoleErrors.push(`${message.text()} @ ${JSON.stringify(message.location())}`); });
     page.on('pageerror', (error) => consoleErrors.push(error.message));
     page.on('response', (response) => { if (response.status() >= 400) badResponses.push(`${response.status()} ${response.url()}`); });
 

@@ -185,6 +185,7 @@ async function main() {
     'assets/fonts/CormorantGaramond-OFL.txt',
     'img/og-default.jpg',
     'img/dmitrov-poster.jpg',
+    'favicon.ico',
     ...htmlFiles
   ];
   for (const file of required) check(await exists(file), `Missing required file: ${file}`);
@@ -211,6 +212,11 @@ async function main() {
     if (!await exists(file)) continue;
     const data = await readFile(path.join(root, file));
     check(data.subarray(0, 4).toString('ascii') === 'wOF2', `${file}: invalid WOFF2 signature`);
+  }
+
+  if (await exists('favicon.ico')) {
+    const icon = await readFile(path.join(root, 'favicon.ico'));
+    check(icon.length > 22 && icon.readUInt16LE(0) === 0 && icon.readUInt16LE(2) === 1 && icon.readUInt16LE(4) === 1, 'favicon.ico: invalid ICO header');
   }
 
   const imageDimensions = new Map([
