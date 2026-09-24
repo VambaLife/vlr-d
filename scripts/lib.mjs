@@ -209,6 +209,16 @@ export function organizationSchema(site) {
     '@type': 'Organization',
     name: site.brandName,
     url: site.baseUrl,
+    logo: `${site.baseUrl}/assets/icons/favicon.svg`,
+    contactPoint: { '@type': 'ContactPoint', telephone: site.phone, contactType: 'customer service' }
+  };
+}
+
+export function realEstateAgentSchema(site) {
+  return {
+    '@type': 'RealEstateAgent',
+    name: site.brandName,
+    url: site.baseUrl,
     telephone: site.phone
   };
 }
@@ -269,11 +279,11 @@ export function collectionSchema(site, title, items) {
 
 export function propertySchema(site, property) {
   return {
-    '@type': ['RealEstateListing', 'Offer'],
+    '@type': 'RealEstateListing',
     name: property.title,
     description: property.description,
     url: `${site.baseUrl}/property/${property.slug}.html`,
-    itemOffered: { '@type': 'Thing', name: 'Объект недвижимости; характеристики уточняются' }
+    additionalProperty: { '@type': 'PropertyValue', name: 'Статус данных', value: 'Требуется проверка перед публикацией' }
   };
 }
 
@@ -283,6 +293,9 @@ export function pageSchema(site, page, breadcrumbs, extra = []) {
     { '@type': 'WebPage', name: page.title, description: page.description, url: new URL(page.canonical, site.baseUrl).href, inLanguage: 'ru-RU' }
   ];
   if (page.key === 'home') graph.push(websiteSchema(site));
+  if (['home', 'about'].includes(page.key) || page.key.startsWith('properties') || page.key.startsWith('category-') || page.key.startsWith('property-')) {
+    graph.push(realEstateAgentSchema(site));
+  }
   if (breadcrumbs?.length) graph.push(breadcrumbSchema(site, breadcrumbs));
   graph.push(...extra);
   return { '@context': 'https://schema.org', '@graph': graph };
