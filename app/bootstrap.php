@@ -29,6 +29,7 @@ require_once __DIR__ . '/Database.php';
 require_once __DIR__ . '/RateLimiter.php';
 require_once __DIR__ . '/Csrf.php';
 require_once __DIR__ . '/Validator.php';
+require_once __DIR__ . '/SmtpClient.php';
 require_once __DIR__ . '/Mailer.php';
 require_once __DIR__ . '/SubscriptionStore.php';
 
@@ -57,7 +58,7 @@ set_exception_handler(static function (Throwable $error) use ($logger): void {
 try {
     $config->assertProductionConfiguration();
     $mailTransport = strtolower((string) $config->get('MAIL_TRANSPORT', 'mail'));
-    if (!in_array($mailTransport, ['mail', 'log'], true)) {
+    if (!in_array($mailTransport, ['mail', 'log', 'smtp'], true)) {
         throw new RuntimeException('Unsupported MAIL_TRANSPORT');
     }
     if ($config->isProduction() && $mailTransport === 'log') {
@@ -86,13 +87,32 @@ try {
     }
     ini_set('session.save_path', $sessionPath);
     $database = new Database($storagePath . DIRECTORY_SEPARATOR . 'application.sqlite');
+    $smtp = null;
+    if ($mailTransport === 'smtp') {
+        $smtpHost = trim((string) $config->get('MAIL_SMTP_HOST', ''));
+        $smtpUser = trim((string) $config->get('MAIL_SMTP_USER', ''));
+        $smtpPassword = (string) $config->get('MAIL_SMTP_PASS', '');
+        $smtpSecurity = strtolower((string) $config->get('MAIL_SMTP_SECURITY', 'ssl'));
+        if ($config->isProduction() && ($smtpHost === '' || $smtpUser === '' || $smtpPassword === '')) {
+            throw new RuntimeException('Production SMTP credentials are incomplete');
+        }
+        $smtp = new SmtpClient(
+            $smtpHost,
+            $config->int('MAIL_SMTP_PORT', 465),
+            $smtpSecurity,
+            $smtpUser,
+            $smtpPassword,
+            $config->int('MAIL_SMTP_TIMEOUT', 15)
+        );
+    }
     $mailer = new Mailer(
         $mailTransport,
         (string) $config->get('MAIL_TO', ''),
         (string) $config->get('MAIL_FROM', ''),
         (string) $config->get('MAIL_FROM_NAME', 'VLR-Dmitrov'),
         $logDirectory,
-        $appUrl
+        $appUrl,
+        $smtp
     );
 
     return [

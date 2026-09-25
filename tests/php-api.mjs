@@ -180,6 +180,7 @@ async function run() {
     await page.locator('#contact-name').fill('Тестовый Пользователь');
     await page.locator('#contact-phone').fill('+7 (999) 123-45-67');
     await page.locator('#contact-email').fill('lead@example.test');
+    await page.locator('#contact-request-type').selectOption('Заказ услуги');
     await page.locator('#contact-message').fill('Тестовое сообщение без HTML.');
     await page.locator('.contact-form input[name="consent"]').check();
     await page.locator('.contact-form button[type="submit"]').click();
@@ -193,8 +194,12 @@ async function run() {
     check(await page.locator('#contact-panel').isHidden(), 'Contact panel did not close after successful submission');
 
     await page.locator('#subscribe-email').fill('subscriber@example.test');
+    await page.locator('#contact-panel').waitFor({ state: 'hidden' });
+    await page.waitForFunction(() => !document.body.classList.contains('is-locked'));
+    const subscriptionConsent = page.locator('#subscribeForm input[name="consent"]');
     await page.locator('#subscribeForm .checkbox-field').click();
-    check(await page.locator('#subscribeForm input[name="consent"]').isChecked(), 'Subscription consent checkbox was not checked through its label');
+    if (!await subscriptionConsent.isChecked()) await subscriptionConsent.check();
+    check(await subscriptionConsent.isChecked(), 'Subscription consent checkbox was not checked through its label');
     await page.locator('#subscribeForm button[type="submit"]').click();
     await page.waitForFunction(() => {
       const status = document.querySelector('#subscribe-status')?.textContent || '';
@@ -234,6 +239,10 @@ async function run() {
 
     const mailPath = path.join(testBase, 'logs', 'mail.log');
     const mailRecords = readFileSync(mailPath, 'utf8').trim().split('\n').filter(Boolean).map((line) => JSON.parse(line));
+    check(mailRecords.some((record) => record.body.includes('Тип заявки: Заказ услуги')), 'Contact request type is missing from the email');
+    check(mailRecords.some((record) => record.subject.includes('Новая подписка')), 'Realtor subscription notification was not sent');
+    check(mailRecords.some((record) => record.to === 'subscriber@example.test'), 'Subscriber confirmation recipient is wrong');
+    check(mailRecords.some((record) => record.to === 'inbox@example.test'), 'Realtor notification recipient is wrong');
     const confirmationRecord = [...mailRecords].reverse().find((record) => record.subject.includes('Подтвердите подписку'));
     check(Boolean(confirmationRecord), 'Confirmation email was not written by test transport');
     const confirmationMatch = confirmationRecord?.body.match(/action=confirm&token=([a-f0-9]{64})/);

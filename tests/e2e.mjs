@@ -124,11 +124,11 @@ async function run() {
     await page.locator('[data-lightbox-close]').click();
     check(await page.locator('[data-lightbox]').isHidden(), 'Lightbox close button failed');
 
-    await page.goto(`${origin}/`, { waitUntil: 'domcontentloaded' });
+    await page.goto(`${origin}/properties/`, { waitUntil: 'domcontentloaded' });
     await page.evaluate(() => { localStorage.removeItem('vlr:v1:favorites'); localStorage.removeItem('vlr:v1:compare'); });
     await page.reload({ waitUntil: 'domcontentloaded' });
     const secondTab = await context.newPage();
-    await secondTab.goto(`${origin}/`, { waitUntil: 'domcontentloaded' });
+    await secondTab.goto(`${origin}/properties/`, { waitUntil: 'domcontentloaded' });
     const firstFavorite = page.locator('[data-favorite]').first();
     await firstFavorite.click();
     check(await firstFavorite.getAttribute('aria-pressed') === 'true', 'Favorite aria-pressed did not change');
@@ -146,7 +146,7 @@ async function run() {
     await page.locator('[data-page="favorites"] [data-favorite]').first().click();
     check(await page.locator('[data-favorites-empty]').isVisible(), 'Empty favorites state is not visible');
 
-    await page.goto(`${origin}/`, { waitUntil: 'domcontentloaded' });
+    await page.goto(`${origin}/properties/`, { waitUntil: 'domcontentloaded' });
     await page.evaluate(() => localStorage.removeItem('vlr:v1:compare'));
     await page.reload({ waitUntil: 'domcontentloaded' });
     for (let index = 0; index < 4; index += 1) await page.locator('[data-compare]').nth(index).click();

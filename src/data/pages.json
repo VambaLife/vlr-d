@@ -110,6 +110,16 @@
     "breadcrumb": "Избранное"
   },
   {
+    "key": "credits",
+    "source": "credits.html",
+    "output": "credits.html",
+    "canonical": "/credits.html",
+    "title": "Фотография Дмитрова и открытые ресурсы — ВЛР-Дмитров",
+    "description": "Источники фотографии Дмитрова, данные автора и лицензия CC BY 2.0, а также локальные OFL-шрифты сайта недвижимости ВЛР-Дмитров и список их файлов на GitHub.",
+    "bodyClass": "page-content",
+    "breadcrumb": "Источники и лицензии"
+  },
+  {
     "key": "404",
     "source": "404.html",
     "output": "404.html",

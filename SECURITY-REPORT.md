@@ -1,12 +1,12 @@
 # Security report
 
-**Дата:** 24 сентября 2026
+**Дата:** 25 сентября 2026
 **Область:** статический frontend, PHP API, generated server configs, локальные тесты.
 **Статус:** baseline реализован; production approval не выдан.
 
 ## Executive summary
 
-Сформирован защищённый baseline для сайта без admin/login и без upload. Реальные ПДн и внешние поставщики не подключены. Основные риски для запуска — незаполненные реквизиты, отсутствие доказательства уведомления Роскомнадзора, отсутствие реальных фото/видео, неподтверждённый MTA/домен и отсутствие независимого penetration/hosting audit.
+Сформирован защищённый baseline для сайта без admin/login и без upload. Публичные телефон и email риэлтора подключены; реальные ПДн и внешние поставщики не подключены. Основные риски для запуска — незаполненные реквизиты юридического оператора, отсутствие доказательства уведомления Роскомнадзора, отсутствие реальных фото/видео объектов, неподтверждённый production MTA/домен и отсутствие независимого penetration/hosting audit.
 
 Это не утверждение, что production полностью безопасен. Security controls описаны в `SECURITY.md`; deployment gates — в `DEPLOY-CHECKLIST.md`.
 
@@ -15,10 +15,10 @@
 | Категория | Статус | Реализовано / ограничение |
 |---|---|---|
 | A01 Broken Access Control | Partial / deployment-dependent | Реальные HTML routes; только 3 PHP endpoints; private path deny; нет admin. Нужно проверить Apache/Nginx на VDS и права ФС. |
-| A02 Cryptographic Failures | Partial / deployment-dependent | HTTPS/TLS 1.2–1.3, Secure/HttpOnly/SameSite cookies, hashed subscription tokens; реальные TLS/backup keys не настроены локально. |
+| A02 Cryptographic Failures | Partial / deployment-dependent | HTTPS/TLS 1.2–1.3, Secure/HttpOnly/SameSite cookies, hashed subscription tokens, TLS-validated optional SMTP; real TLS/backup keys and production delivery are not locally configured. |
 | A03 Injection | PASS in local code | PDO prepared statements, escaped server HTML, safe DOM/textContent, no eval/document.write/innerHTML, no user-controlled shell/URL fetch. |
 | A04 Insecure Design | PASS baseline / external review pending | Threat model, CSRF, honeypot, rate limits, double-opt-in, no fake success, no admin/upload. Legal/hosting review outstanding. |
-| A05 Security Misconfiguration | Partial / deployment-dependent | Generated `.htaccess`/Nginx, headers, no display_errors, private dirs, env template; executables and actual vhost unavailable. |
+| A05 Security Misconfiguration | Partial / deployment-dependent | Generated `.htaccess`/Nginx, headers, no display_errors, private dirs, env template, SMTP secret placeholder; executables and actual vhost unavailable. |
 | A06 Vulnerable and Outdated Components | PASS at audit time | `npm audit --audit-level=high`: 0; lockfile pinned; no Composer dependency. Re-audit at each release. |
 | A07 Identification and Authentication Failures | N/A | No login/admin/auth flow. Re-review required if added. |
 | A08 Software and Data Integrity Failures | N/A / partial supply chain | No uploads and no third-party runtime scripts; lockfile/build/provenance present. CI signing/SBOM not yet added. |
@@ -29,9 +29,10 @@
 
 - `npm audit --audit-level=high` → 0.
 - PHP 8.3 lint → all files pass.
-- PHP integration → CSRF, origin, honeypot, validation, 5/hour + 20/day limits, mail transport, double-opt-in, unsubscribe, logs.
-- axe-core → 11 routes × desktop/mobile, 0 violations.
-- Static check → 25 HTML, 58 required files, links/anchors/JSON-LD/CSP checks.
+- PHP integration → CSRF, origin, honeypot, validation, 5/hour + 20/day limits, request type, double-opt-in, realtor subscription notification, unsubscribe, logs.
+- SMTP integration test → Mailer + local fake server validate EHLO/AUTH/MAIL/RCPT/DATA/QUIT, To/Subject headers and base64 body; no real message is sent.
+- axe-core → 12 routes × desktop/mobile, 0 violations.
+- Static check → 26 HTML, 79 required files, links/anchors/JSON-LD/CSP checks.
 - Browser E2E → no external requests, no console errors, localStorage PII audit, no overflow, Back/direct/no-JS.
 - CSP → `script-src 'self'` plus generated hashes for known JSON-LD; no external font origins.
 - Secrets → `.env`, salts, private keys, databases and logs excluded from Git.
@@ -41,10 +42,11 @@
 
 ### P0 — before launch
 
-- [ ] Fill legal operator/requisites and email.
+- [x] Add public realtor phone/email and an attributed CC BY 2.0 Dmitrov city hero image.
+- [ ] Fill legal operator/requisites and dedicated legal contact.
 - [ ] Verify Roskomnadzor notification status and evidence.
 - [ ] Configure real HTTPS, PHP-FPM/Apache, secure cookies, file permissions and server headers.
-- [ ] Configure real MTA and test delivery/bounces.
+- [ ] Configure real Yandex SMTP credentials and test delivery/bounces.
 - [ ] Fill retention/cross-border/third-party register.
 - [ ] Obtain real media rights and verified object data.
 - [ ] Perform external security review/penetration test.
@@ -53,7 +55,7 @@
 ### P1 — before connecting services
 
 - [ ] CRM provider decision and DPA/roles/countries.
-- [ ] SMTP/mailing provider decision.
+- [ ] Confirm Yandex mailbox ownership, app password, SPF/DKIM/DMARC and bounce processing.
 - [ ] Analytics/monitoring consent and PII scrubbing.
 - [ ] WAF/fail2ban rules using actual access-log format.
 - [ ] Incident contact and legal notification runbook.
@@ -78,6 +80,7 @@ HSTS preload must not be submitted until all subdomains are confirmed HTTPS-only
 
 - Nginx/Apache syntax on a real server (binaries absent locally).
 - External WAF/firewall/IDS configuration.
+- Real Yandex SMTP delivery, headers, SPF/DKIM/DMARC and bounce handling.
 - Production backups, TLS certificates, DNS and mail headers.
 - Real browser/device matrix and field INP.
 - Third-party dependency vulnerability state after future installs.

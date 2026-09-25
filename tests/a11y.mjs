@@ -9,7 +9,7 @@ import AxeBuilder from '@axe-core/playwright';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const port = 4178;
 const origin = `http://127.0.0.1:${port}`;
-const routes = ['/', '/property/berezovaya-25.html', '/search.html', '/account/favorites.html', '/about.html', '/faq.html', '/privacy.html', '/consent.html', '/terms.html', '/requisites.html', '/404.html'];
+const routes = ['/', '/property/berezovaya-25.html', '/search.html', '/account/favorites.html', '/about.html', '/faq.html', '/privacy.html', '/consent.html', '/terms.html', '/requisites.html', '/credits.html', '/404.html'];
 const viewports = [{ width: 1440, height: 900 }, { width: 375, height: 812 }];
 const failures = [];
 

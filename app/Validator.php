@@ -15,6 +15,7 @@ final class Validator
         $email = $this->email($request->postString('email', 254));
         $message = $this->multiline($request->postString('message', 2000));
         $property = $request->postString('property', 80);
+        $requestType = $request->postString('request_type', 40) ?: 'Другая заявка';
         $consent = $request->postString('consent', 2);
 
         if ($name === '' || preg_match('/^[\p{L}\p{M}][\p{L}\p{M}\s\'’\-]{1,99}$/u', $name) !== 1) {
@@ -29,10 +30,13 @@ final class Validator
         if ($property !== '' && preg_match('/^[a-z0-9-]{1,80}$/', $property) !== 1) {
             $errors['property'] = 'Некорректный идентификатор объекта.';
         }
+        if (!in_array($requestType, ['Подбор объекта', 'Просмотр', 'Консультация', 'Заказ услуги', 'Другая заявка'], true)) {
+            $errors['request_type'] = 'Выберите допустимый тип заявки.';
+        }
         if ($consent !== '1') {
             $errors['consent'] = 'Без согласия на обработку данных отправить форму нельзя.';
         }
-        $values = compact('name', 'phone', 'email', 'message', 'property');
+        $values = compact('name', 'phone', 'email', 'message', 'property', 'requestType');
         return [$errors, $values];
     }
 

@@ -10,7 +10,7 @@ $logger = $container['logger'];
 $requestId = $request->requestId();
 $ip = $request->ip();
 $baseContext = ['request_id' => $requestId, 'ip' => $ip, 'form' => 'subscribe'];
-$consentVersion = '2026-09-24';
+$consentVersion = '2026-09-25';
 
 function confirmationPage(string $title, string $message): string
 {
@@ -125,6 +125,23 @@ try {
     } catch (Throwable $error) {
         $logger->error('subscription_mail_failed', $baseContext + ['type' => get_class($error)]);
         throw new HttpException(502, 'Не удалось отправить письмо подтверждения. Попробуйте позднее.');
+    }
+    try {
+        $container['mailer']->send(
+            (string) $container['config']->get('MAIL_TO', ''),
+            'Новая подписка на объекты ВЛР-Дмитров',
+            implode("\n", [
+                'Получена новая подписка на объекты.',
+                '',
+                'Email: ' . $email,
+                'Статус: ожидает подтверждения',
+                'Версия согласия: ' . $consentVersion,
+                'Request ID: ' . $requestId,
+            ])
+        );
+    } catch (Throwable $error) {
+        $logger->error('subscription_notification_mail_failed', $baseContext + ['type' => get_class($error)]);
+        throw new HttpException(502, 'Не удалось отправить уведомление о подписке. Попробуйте позднее.');
     }
     $logger->lead('subscription_pending', $baseContext);
     Response::json(202, ['ok' => true, 'message' => 'Проверьте почту и подтвердите подписку в письме.']);

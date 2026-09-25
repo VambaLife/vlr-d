@@ -9,7 +9,7 @@ const port = 4174;
 const origin = `http://127.0.0.1:${port}`;
 const pages = [
   '/', '/about.html', '/faq.html', '/sitemap.html', '/privacy.html', '/consent.html', '/terms.html',
-  '/ethical.html', '/requisites.html', '/search.html', '/account/favorites.html', '/404.html', '/500.html',
+  '/ethical.html', '/requisites.html', '/credits.html', '/search.html', '/account/favorites.html', '/404.html', '/500.html',
   '/properties.html', '/properties/', '/properties/flats.html', '/properties/houses.html',
   '/properties/commercial.html', '/properties/rent.html', '/property/berezovaya-25.html',
   '/property/kp-lesnoy.html', '/property/sovetskaya-12.html', '/property/centr-studio.html',
@@ -88,11 +88,11 @@ async function run() {
     check(badResponses.length === 0, `HTTP errors: ${[...new Set(badResponses)].join(' | ')}`);
 
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto(`${origin}/`, { waitUntil: 'domcontentloaded' });
+    await page.goto(`${origin}/properties/`, { waitUntil: 'domcontentloaded' });
     await Promise.all([page.waitForURL(/\/property\/berezovaya-25\.html$/), page.locator('[data-property-card] a').first().click()]);
     check(page.url().endsWith('/property/berezovaya-25.html'), `Direct property navigation failed: ${page.url()}`);
     await page.goBack({ waitUntil: 'domcontentloaded' });
-    check(new URL(page.url()).pathname === '/', `Browser Back failed: ${page.url()}`);
+    check(new URL(page.url()).pathname === '/properties/', `Browser Back failed: ${page.url()}`);
 
     const noJsContext = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 375, height: 812 } });
     const noJsPage = await noJsContext.newPage();

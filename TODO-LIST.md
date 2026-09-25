@@ -1,21 +1,22 @@
 # Consolidated TODO list
 
-Состояние на 24 сентября 2026. Детали разделены в `TODO-CONTENT.md` и `TODO-REQUISITES.md`.
+Состояние на 25 сентября 2026. Детали разделены в `TODO-CONTENT.md` и `TODO-REQUISITES.md`.
 
 ## P0 — блокирует production
 
 - [ ] Получить и проверить полное наименование юридического лица/ИП.
 - [ ] Получить ОГРН/ОГРНИП, ИНН, КПП, юридический и фактический адреса.
-- [ ] Получить подтверждённый email для заявлений по 149-ФЗ и PDн.
+- [x] Публичный email риэлтора `vikvin14@yandex.ru` указан для контактов и уведомлений.
+- [ ] Получить и подтвердить dedicated legal contact/email для заявлений по 149-ФЗ и PDн.
 - [ ] Определить владельца домена, оператора PDн, исполнителя рекламы и агентства; описать роли.
 - [ ] Проверить необходимость уведомления в Роскомнадзор и сохранить доказательство.
-- [ ] Заполнить `APP_URL`, `MAIL_TO`, `MAIL_FROM` и проверить домен/MTA.
+- [ ] Заполнить `APP_URL`, `MAIL_TO`, `MAIL_FROM`, SMTP credentials и проверить домен/MTA.
 - [ ] Сгенерировать production `RATE_LIMIT_SALT` и `DATA_HASH_KEY`.
 - [ ] Проверить/настроить HTTPS, HSTS, firewall, WAF и реальные server headers.
 - [ ] Провести юридическую проверку политики, согласия, terms, реквизитов и рекламных формулировок.
 - [ ] Заполнить сроки хранения, карту сервисов, стран обработки и cross-border оснований.
 - [ ] Получить 48 реальных фотографий и подтверждение прав на публикацию.
-- [ ] Получить лицензированное hero-видео или оставить video disabled.
+- [x] Hero video оставлен disabled (`heroVideo=null`), чтобы не публиковать медиа без лицензии.
 - [ ] Подтвердить цены, адреса, типы, площади и описания всех объектов.
 - [ ] Выполнить restore test внешнего backup.
 
@@ -47,11 +48,11 @@
 - [x] Lightbox, panels, focus management, keyboard/touch controls.
 - [x] Избранное и compare с localStorage только slug.
 - [x] URL-поиск и browser Back.
-- [x] PHP CSRF, validation, honeypot, rate limits, `mail()`.
+- [x] PHP CSRF, validation, honeypot, rate limits, `mail()`/TLS SMTP и request type.
 - [x] Double-opt-in и unsubscribe.
 - [x] Security headers templates, robots, sitemap, backup script.
-- [x] Smoke/E2E/PHP/axe/Lighthouse local test scripts.
-- [x] Honest placeholders при отсутствии фото/видео.
+- [x] Smoke/E2E/PHP/SMTP/axe/Lighthouse local test scripts.
+- [x] Honest placeholders при отсутствии фото/видео; локальный городской hero с CC BY 2.0 attribution.
 - [x] Юридические документы с явными placeholders и launch blockers.
 
 ## Нельзя закрыть кодом

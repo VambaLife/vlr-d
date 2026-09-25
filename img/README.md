@@ -1,10 +1,9 @@
-# Media placeholders
+# Media assets
 
-This directory contains generated, honest placeholders only:
-
-- `og-default.jpg` — default social-sharing card for the VLR-Dmitrov brand;
+- `dmitrov-hero-800.*`, `dmitrov-hero.*` (1200px), `dmitrov-hero-1840.*` — local responsive AVIF/WebP/JPEG copies of the Dmitrov Kremlin city view, CC BY 2.0; see `MEDIA-LICENSES.md` and `/credits.html`.
+- `dmitrov-kremlin-source.jpg` — local source copy used for reproducible optimization.
+- `og-default.jpg` — default social-sharing card for the VLR-Dmitrov brand.
 - `dmitrov-poster.jpg` — explicitly marked poster used only as a future hero-video poster.
+- `objects/` — no fake property photos; real assets are added only after rights verification.
 
-Neither image depicts or simulates a real property. They must not be used in a property card, gallery, or advertisement as if they were property photography.
-
-The real hero video, its license record, the property photographs, and owner publication permissions are tracked in `TODO-CONTENT.md` when that document is created.
+The city hero image is not a property photograph and must not be reused as an object listing image. The real hero video, property photographs, and owner publication permissions are tracked in `TODO-CONTENT.md`.

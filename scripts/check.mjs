@@ -16,6 +16,7 @@ const htmlFiles = [
   'terms.html',
   'ethical.html',
   'requisites.html',
+  'credits.html',
   'search.html',
   'account/favorites.html',
   '404.html',
@@ -191,11 +192,23 @@ async function main() {
     'assets/fonts/CormorantGaramond-OFL.txt',
     'img/og-default.jpg',
     'img/dmitrov-poster.jpg',
+    'img/dmitrov-kremlin-source.jpg',
+    'img/dmitrov-hero.jpg',
+    'img/dmitrov-hero.webp',
+    'img/dmitrov-hero.avif',
+    'img/dmitrov-hero-800.jpg',
+    'img/dmitrov-hero-800.webp',
+    'img/dmitrov-hero-800.avif',
+    'img/dmitrov-hero-1840.jpg',
+    'img/dmitrov-hero-1840.webp',
+    'img/dmitrov-hero-1840.avif',
+    'img/MEDIA-LICENSES.md',
     'favicon.ico',
     'api/csrf.php',
     'api/send.php',
     'api/subscribe.php',
     'api/.htaccess',
+    'app/SmtpClient.php',
     '.htaccess',
     'nginx.conf',
     'robots.txt',
@@ -204,6 +217,7 @@ async function main() {
     'src/server/htaccess.template',
     'src/server/nginx.conf.template',
     'README.md',
+    'GITHUB-SETUP.md',
     'DEPLOY.md',
     'SECURITY.md',
     'scripts/backup.sh',
@@ -291,14 +305,24 @@ async function main() {
   }
 
   const imageDimensions = new Map([
-    ['img/og-default.jpg', [1200, 630]],
-    ['img/dmitrov-poster.jpg', [1920, 1080]]
+    ['img/dmitrov-kremlin-source.jpg', [1840, 1228, 'jpeg']],
+    ['img/og-default.jpg', [1200, 630, 'jpeg']],
+    ['img/dmitrov-poster.jpg', [1920, 1080, 'jpeg']],
+    ['img/dmitrov-hero.jpg', [1200, 801, 'jpeg']],
+    ['img/dmitrov-hero.webp', [1200, 801, 'webp']],
+    ['img/dmitrov-hero.avif', [1200, 801, 'heif']],
+    ['img/dmitrov-hero-800.jpg', [800, 534, 'jpeg']],
+    ['img/dmitrov-hero-800.webp', [800, 534, 'webp']],
+    ['img/dmitrov-hero-800.avif', [800, 534, 'heif']],
+    ['img/dmitrov-hero-1840.jpg', [1840, 1228, 'jpeg']],
+    ['img/dmitrov-hero-1840.webp', [1840, 1228, 'webp']],
+    ['img/dmitrov-hero-1840.avif', [1840, 1228, 'heif']]
   ]);
   for (const [file, expected] of imageDimensions) {
     if (!await exists(file)) continue;
     const metadata = await sharp(path.join(root, file)).metadata();
-    check(metadata.width === expected[0] && metadata.height === expected[1], `${file}: expected ${expected.join('x')}, got ${metadata.width}x${metadata.height}`);
-    check(metadata.format === 'jpeg', `${file}: expected JPEG, got ${metadata.format}`);
+    check(metadata.width === expected[0] && metadata.height === expected[1], `${file}: expected ${expected.slice(0, 2).join('x')}, got ${metadata.width}x${metadata.height}`);
+    check(metadata.format === expected[2], `${file}: expected ${expected[2]}, got ${metadata.format}`);
   }
 
   if (await exists('assets/js/main.min.js')) {

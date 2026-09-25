@@ -11,7 +11,8 @@ final class Mailer
         private string $from,
         private string $fromName,
         private string $logDirectory,
-        private string $appUrl
+        private string $appUrl,
+        private ?SmtpClient $smtp = null
     ) {
     }
 
@@ -26,6 +27,7 @@ final class Mailer
         $encodedSubject = '=?UTF-8?B?' . base64_encode($safeSubject) . '?=';
         $headers = [
             'From: ' . $this->encodeAddress($this->fromName) . ' <' . $from . '>',
+            'To: ' . $to,
             'Reply-To: ' . $from,
             'X-Mailer: VLR-Dmitrov',
             'MIME-Version: 1.0',
@@ -41,6 +43,13 @@ final class Mailer
                 'body' => $text,
             ];
             file_put_contents($this->logDirectory . DIRECTORY_SEPARATOR . 'mail.log', json_encode($record, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . PHP_EOL, FILE_APPEND | LOCK_EX);
+            return;
+        }
+        if ($this->transport === 'smtp') {
+            if (!$this->smtp) {
+                throw new \RuntimeException('SMTP transport is not configured');
+            }
+            $this->smtp->send($from, $to, $encodedSubject, $body, $headers);
             return;
         }
         if (!function_exists('mail')) {

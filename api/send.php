@@ -53,6 +53,7 @@ try {
     $text = implode("\n", [
         'Новая заявка с сайта VLR-Dmitrov',
         '',
+        'Тип заявки: ' . $values['requestType'],
         'Имя: ' . $values['name'],
         'Телефон: ' . $values['phone'],
         'Email: ' . $values['email'],
@@ -61,7 +62,7 @@ try {
         'Сообщение:',
         $values['message'] !== '' ? $values['message'] : 'Не указано',
         '',
-        'Версия согласия: 2026-09-24',
+        'Версия согласия: 2026-09-25',
     ]);
 
     try {
@@ -75,7 +76,7 @@ try {
         throw new HttpException(502, 'Не удалось отправить заявку. Позвоните нам по телефону.');
     }
 
-    $logger->lead('contact_sent', $baseContext + ['form_id' => 'contact_form_v1', 'consent_version' => '2026-09-24', 'action' => 'submit']);
+    $logger->lead('contact_sent', $baseContext + ['form_id' => 'contact_form_v1', 'consent_version' => '2026-09-25', 'action' => 'submit']);
     Response::json(200, ['ok' => true, 'message' => 'Заявка принята. Мы свяжемся с вами после проверки обращения.']);
 } catch (HttpException $error) {
     Response::json($error->status(), ['ok' => false, 'message' => $error->getMessage()]);

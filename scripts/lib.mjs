@@ -210,7 +210,7 @@ export function organizationSchema(site) {
     name: site.brandName,
     url: site.baseUrl,
     logo: `${site.baseUrl}/assets/icons/favicon.svg`,
-    contactPoint: { '@type': 'ContactPoint', telephone: site.phone, contactType: 'customer service' }
+    contactPoint: { '@type': 'ContactPoint', telephone: site.phone, email: site.email, contactType: 'customer service' }
   };
 }
 
@@ -219,7 +219,8 @@ export function realEstateAgentSchema(site) {
     '@type': 'RealEstateAgent',
     name: site.brandName,
     url: site.baseUrl,
-    telephone: site.phone
+    telephone: site.phone,
+    email: site.email
   };
 }
 

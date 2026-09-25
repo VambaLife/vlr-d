@@ -65,4 +65,14 @@ export async function ensureMediaAssets() {
     note: 'Лицензия и права на публикацию будут проверены',
     fontData
   })).jpeg({ quality: 86, progressive: true, chromaSubsampling: '4:2:0' }).toFile(path.join(root, 'img/dmitrov-poster.jpg'));
+
+  const heroSource = path.join(root, 'img/dmitrov-kremlin-source.jpg');
+  for (const width of [800, 1200, 1840]) {
+    const height = Math.round(width * 1228 / 1840);
+    const hero = sharp(heroSource).resize({ width, height, fit: 'cover' });
+    const suffix = width === 1200 ? '' : `-${width}`;
+    await hero.clone().jpeg({ quality: 84, progressive: true, chromaSubsampling: '4:2:0' }).toFile(path.join(root, `img/dmitrov-hero${suffix}.jpg`));
+    await hero.clone().webp({ quality: 80, effort: 5 }).toFile(path.join(root, `img/dmitrov-hero${suffix}.webp`));
+    await hero.clone().avif({ quality: 48, effort: 5 }).toFile(path.join(root, `img/dmitrov-hero${suffix}.avif`));
+  }
 }

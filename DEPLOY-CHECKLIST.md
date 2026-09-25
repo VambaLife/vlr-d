@@ -1,7 +1,7 @@
 # Production deployment checklist
 
 **Проект:** VLR-Dmitrov
-**Дата:** 24 сентября 2026
+**Дата:** 25 сентября 2026
 **Текущий статус:** NOT PRODUCTION-APPROVED — внешние данные и инфраструктура не подтверждены.
 
 ## 1. Pre-release
@@ -11,6 +11,7 @@
 - [ ] `npm test` проходит полностью.
 - [ ] `npm audit --audit-level=high` — 0 high/critical.
 - [ ] `npm run test:a11y` — PASS.
+- [ ] `npm run test:smtp` — PASS на локальном fake SMTP server.
 - [ ] `npm run lighthouse` выполнен и отчёт приложен отдельно.
 - [ ] PHP lint всех файлов проходит.
 - [ ] `bash -n build.sh scripts/backup.sh` проходит.
@@ -18,13 +19,15 @@
 
 ## 2. Content/legal gate
 
+- [x] Публичные телефон и email риэлтора указаны на сайте; email не подтверждает реквизиты юридического оператора.
+- [ ] Юридический оператор, его email, ОГРН/ИНН/КПП и адрес заполнены на `/requisites.html` и в footer.
 - [ ] Все 6 объектов имеют verified data.
 - [ ] Цены, адреса, площади, типы и описания подтверждены.
 - [ ] 48 фото имеют rights/consent records.
-- [ ] Hero video имеет лицензию, music rights и checksum либо video disabled.
+- [x] Фото Дмитровского кремля на главной имеет локальную копию, CC BY 2.0 и attribution на `/credits.html`; оно не используется как фото объекта.
+- [x] Hero video отключён (`heroVideo=null`), поэтому битых video/preload и непроверенных music rights нет.
 - [ ] Нет неподтверждённых `2450+`, рейтингов, гарантий, «100%» и рекламных обещаний.
 - [ ] Нет выдуманных отзывов.
-- [ ] Оператор, ОГРН/ИНН/КПП, адрес и email заполнены на `/requisites.html` и в footer.
 - [ ] Статус уведомления Роскомнадзора подтверждён документом или оставлен «не подтверждено».
 - [ ] Policy/consent/terms проверены юристом.
 - [ ] Retention и third-party/cross-border register заполнены.
@@ -47,9 +50,10 @@
 - [ ] `APP_ENV=production`, `APP_DEBUG=false`.
 - [ ] `APP_URL` — реальный HTTPS URL.
 - [ ] `COOKIE_SECURE=auto` не заменён на false.
-- [ ] `MAIL_TRANSPORT=mail`, `MAIL_TO` и `MAIL_FROM` подтверждены.
+- [ ] `MAIL_TRANSPORT=smtp`, `MAIL_TO`, `MAIL_FROM`, `MAIL_SMTP_HOST`, `MAIL_SMTP_USER` и секретный `MAIL_SMTP_PASS` подтверждены на сервере.
 - [ ] `MAIL_FROM` проходит SPF/DKIM/DMARC checks.
 - [ ] Controlled test письма проходит; headers не содержат PII в subject/header.
+- [ ] Заявка, подтверждение подписки и уведомление риэлтору проверены на реальном mailbox; SPF/DKIM/DMARC и bounce handling проверены.
 - [ ] `CRM_PROVIDER=none` и `SUBSCRIPTION_PROVIDER=none` не меняются без решения.
 
 ## 5. Security/operations

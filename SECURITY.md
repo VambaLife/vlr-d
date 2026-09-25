@@ -6,10 +6,10 @@ The code implements a strong baseline for a small static site, but production se
 
 ## Data classification
 
-- **Public:** HTML, CSS, JS, local fonts, approved public media, public phone number.
+- **Public:** HTML, CSS, JS, local fonts, approved public media, public phone number, and the realtor's public contact email.
 - **Internal:** source maps/build caches if added later, server configuration, non-public operational metadata.
 - **Sensitive:** name, phone, email, message, property interest, subscription status, tokens, session identifiers, logs containing IP, `.env`, database files.
-- **Secret:** `RATE_LIMIT_SALT`, `DATA_HASH_KEY`, mail/CRM/monitoring credentials, TLS private keys.
+- **Secret:** `RATE_LIMIT_SALT`, `DATA_HASH_KEY`, `MAIL_SMTP_PASS` and other mail/CRM/monitoring credentials, TLS private keys.
 
 Secrets must not be committed, placed in HTML/CSS/JS, sent to analytics, or printed in logs.
 
@@ -50,6 +50,8 @@ Secrets must not be committed, placed in HTML/CSS/JS, sent to analytics, or prin
 - 5 requests/hour and 20/day per IP for contact and subscription endpoints.
 - `PDO` prepared statements only; no shell execution functions or user-controlled `exec`/`system`.
 - Mail headers are sanitized and recipient/sender are validated.
+- Optional SMTP uses a fixed server-side host, TLS certificate verification, bounded timeouts, AUTH LOGIN over TLS, and dot-stuffed message data. Unencrypted SMTP is rejected outside CLI tests.
+- `MAIL_SMTP_PASS` is never placed in HTML, logs, error messages, or Git.
 - No arbitrary URL input is fetched server-side, so SSRF surface is not exposed. Any future CRM/mail provider call must use a fixed server-side allowlist and never a user-provided URL.
 
 ### Data minimization and storage
@@ -110,13 +112,14 @@ Do not send incident evidence containing PDN to public issue trackers or unappro
 
 ## Reporting a vulnerability
 
-Use the confirmed private security contact from `requisites.html`/`TODO-REQUISITES.md` after launch. Until an email is confirmed, do not publish a sensitive vulnerability report in a public issue. Provide a minimal reproduction, affected route/version, impact, and safe remediation evidence. Do not include real customer data or active exploitation code.
+Use the confirmed public realtor contact `vikvin14@yandex.ru` for operational/security reports only after the owner confirms it is the appropriate private channel. The legal operator's requisites and dedicated security contact remain a launch gate; do not publish sensitive vulnerability evidence in a public issue. Provide a minimal reproduction, affected route/version, impact, and safe remediation evidence. Do not include real customer data or active exploitation code.
 
 ## Known limitations before launch
 
-- Operator/requisites, Roskomnadzor notification status, mail addresses, CRM, hosting, and real content are not confirmed.
+- Operator/requisites, dedicated legal contact, Roskomnadzor notification status, domain, real property content, and production MTA delivery are not confirmed.
+- The realtor's public phone/email are configured, but they do not prove the legal operator's identity or complete 149-ФЗ details.
 - No third-party penetration test has been performed.
 - Real Safari/iOS, Яндекс.Браузер, Samsung Internet and production field INP require external verification.
-- No real property photography/video has been supplied.
-- `mail()` deliverability depends on the hosting MTA and DNS records.
+- No real property photography/video has been supplied; the city hero is a separately attributed CC BY 2.0 image, not an object photograph.
+- Real Yandex SMTP delivery, SPF/DKIM/DMARC, bounce handling, and mailbox ownership remain unverified.
 - HSTS preload and WAF are deployment decisions, not local code guarantees.
