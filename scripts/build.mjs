@@ -226,16 +226,25 @@ function requisitesTokens(site) {
   const inn = field(site.inn);
   const kpp = field(site.kpp);
   const address = field(site.address);
-  const known = [name, ogrn, inn, kpp, address].filter((part) => part !== unconfirmed);
+  // An ИП has no KPP, and the placeholder value is a statement of absence, not
+  // a datum. It must never be glued into the operator summary as if it were.
+  const notApplicable = /^\s*не применяется\s*$/i;
+  const isEntrepreneur = String(site.operatorType || '').toUpperCase() === 'ИП';
+  const ogrnLabel = isEntrepreneur ? 'ОГРНИП' : 'ОГРН';
+  const parts = [];
+  if (name !== unconfirmed) parts.push(`${isEntrepreneur ? 'ИП ' : ''}${name}`);
+  if (ogrn !== unconfirmed) parts.push(`${ogrnLabel} ${ogrn}`);
+  if (inn !== unconfirmed) parts.push(`ИНН ${inn}`);
+  if (kpp !== unconfirmed && !notApplicable.test(kpp)) parts.push(`КПП ${kpp}`);
+  if (address !== unconfirmed) parts.push(`адрес ${address}`);
   return {
     operatorName: name,
     operatorOgrn: ogrn,
+    operatorOgrnLabel: ogrnLabel,
     operatorInn: inn,
     operatorKpp: kpp,
     operatorAddress: address,
-    operatorSummary: known.length
-      ? `Оператор: ${known.join(', ')}.`
-      : 'Реквизиты оператора уточняются.',
+    operatorSummary: parts.length ? `Оператор: ${parts.join(', ')}.` : 'Реквизиты оператора уточняются.',
     roskomnadzorStatus: site.roskomnadzorSubmitted ? 'подтверждено' : 'не подтверждено',
     requisitesLead: site.requisitesVerified
       ? 'Сведения об операторе сайта и его контактные данные.'

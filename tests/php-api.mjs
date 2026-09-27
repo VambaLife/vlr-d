@@ -193,13 +193,29 @@ async function run() {
     await page.locator('#contact-panel [data-panel-close]').click();
     check(await page.locator('#contact-panel').isHidden(), 'Contact panel did not close after successful submission');
 
-    await page.locator('#subscribe-email').fill('subscriber@example.test');
+    // Close the contact panel before filling the subscription form. Filling a
+    // field of a form that lives outside the panel while the panel is still open
+    // races the panel close: the submit then runs against a value that never
+    // landed, and checkValidity() reports a missing required field.
     await page.locator('#contact-panel').waitFor({ state: 'hidden' });
     await page.waitForFunction(() => !document.body.classList.contains('is-locked'));
+    await page.locator('#subscribe-email').fill('subscriber@example.test');
     const subscriptionConsent = page.locator('#subscribeForm input[name="consent"]');
     await page.locator('#subscribeForm .checkbox-field').click();
     if (!await subscriptionConsent.isChecked()) await subscriptionConsent.check();
     check(await subscriptionConsent.isChecked(), 'Subscription consent checkbox was not checked through its label');
+    // Make a repeat failure self-diagnosing instead of an opaque status message.
+    const diagnostic = await page.evaluate(() => {
+      const form = document.querySelector('#subscribeForm');
+      const email = document.querySelectorAll('#subscribe-email');
+      return JSON.stringify({
+        emailCount: email.length,
+        values: Array.from(email).map((el) => el.value),
+        formConnected: Boolean(form && form.isConnected),
+        busy: form ? form.getAttribute('aria-busy') : null
+      });
+    });
+    check(await page.locator('#subscribe-email').inputValue() === 'subscriber@example.test', `Subscription email was cleared before submit: ${diagnostic}`);
     await page.locator('#subscribeForm button[type="submit"]').click();
     await page.waitForFunction(() => {
       const status = document.querySelector('#subscribe-status')?.textContent || '';
