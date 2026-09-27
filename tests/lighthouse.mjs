@@ -1,6 +1,6 @@
 import { spawn } from 'node:child_process';
 import http from 'node:http';
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -56,6 +56,24 @@ async function waitForServer(child) {
   throw new Error('Static server did not become ready');
 }
 
+function routeFile(route) {
+  if (route === '/') return 'index.html';
+  return route.replace(/^\//, '').replace(/\/$/, '/index.html');
+}
+
+// Unverified property drafts ship as noindex, follow so crawlers do not index
+// empty cards. Attribute order in the minified output is not stable, so scan
+// every meta tag instead of assuming name= precedes content=.
+function isNoindexRoute(route) {
+  try {
+    const source = readFileSync(path.join(root, routeFile(route)), 'utf8');
+    return (source.match(/<meta[^>]*>/g) || [])
+      .some((tag) => /name=["']robots["']/i.test(tag) && /noindex/i.test(tag));
+  } catch (_) {
+    return false;
+  }
+}
+
 async function run() {
   const server = spawn(process.execPath, ['scripts/serve.mjs'], {
     cwd: root,
@@ -88,8 +106,19 @@ async function run() {
           speedIndex: lhr.audits['speed-index']?.numericValue
         }
       };
+      const noindex = isNoindexRoute(route);
+      report.routes[route].indexable = !noindex;
       check(lhr.categories.accessibility.score === 1, `${route}: Lighthouse accessibility score ${lhr.categories.accessibility.score}`);
-      check(lhr.categories.seo.score === 1, `${route}: Lighthouse SEO score ${lhr.categories.seo.score}`);
+      // Lighthouse's is-crawlable audit scores a noindex page as an SEO failure,
+      // because that is exactly what the page asks for. Demanding SEO 1.0 there
+      // would require the opposite of the indexing strategy, so the perfect-SEO
+      // gate applies to indexable routes only; for a noindex route we assert the
+      // opposite instead, that the opt-out is really in effect.
+      if (noindex) {
+        check(lhr.audits['is-crawlable']?.score === 0, `${route}: noindex route is unexpectedly crawlable`);
+      } else {
+        check(lhr.categories.seo.score === 1, `${route}: Lighthouse SEO score ${lhr.categories.seo.score}`);
+      }
       check(lhr.audits['csp-xss']?.score !== 0, `${route}: CSP audit failed`);
     }
     const outputDirectory = process.platform === 'win32'
@@ -114,7 +143,7 @@ run().then(() => {
     process.exitCode = 1;
     return;
   }
-  process.stdout.write('Lighthouse local checks passed for performance, accessibility, best-practices and SEO categories.\n');
+  process.stdout.write('Lighthouse local checks passed: performance, accessibility and best-practices on all routes, plus SEO 1.0 on every indexable route.\n');
 }).catch((error) => {
   process.stderr.write(`${error.stack || error.message}\n`);
   process.exitCode = 1;
