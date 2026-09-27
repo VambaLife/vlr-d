@@ -2,25 +2,24 @@
   <div class="shell content-hero__inner">
     <p class="eyebrow">Оператор сайта</p>
     <h1>Реквизиты</h1>
-    <p class="content-hero__lead">Документ подготовлен для публикации только после ввода и проверки юридических сведений.</p>
+    <p class="content-hero__lead">{{requisitesLead}}</p>
   </div>
 </section>
 
 <section class="content-section" aria-labelledby="requisites-heading">
   <div class="shell requisites-card">
     <h2 id="requisites-heading">Сведения об операторе</h2>
-    <!-- TODO: real data -->
     <dl class="details-list">
-      <div><dt>Наименование</dt><dd>Не подтверждено</dd></div>
-      <div><dt>ОГРН</dt><dd>Не подтверждён</dd></div>
-      <div><dt>ИНН</dt><dd>Не подтверждён</dd></div>
-      <div><dt>КПП</dt><dd>Не подтверждён</dd></div>
-      <div><dt>Юридический адрес</dt><dd>Не подтверждён</dd></div>
+      <div><dt>Наименование или ФИО</dt><dd>{{operatorName}}</dd></div>
+      <div><dt>ОГРН/ОГРНИП</dt><dd>{{operatorOgrn}}</dd></div>
+      <div><dt>ИНН</dt><dd>{{operatorInn}}</dd></div>
+      <div><dt>КПП</dt><dd>{{operatorKpp}}</dd></div>
+      <div><dt>Адрес регистрации</dt><dd>{{operatorAddress}}</dd></div>
       <div><dt>Электронная почта риэлтора</dt><dd><a href="mailto:vikvin14@yandex.ru">vikvin14@yandex.ru</a></dd></div>
       <div><dt>Телефон</dt><dd><a href="tel:+79257357762">+7 (925) 735-77-62</a></dd></div>
     </dl>
-    <p class="data-notice">Публикация фиктивных реквизитов запрещена. До заполнения полей страница не готова к production-выпуску.</p>
-    <p>Сведения о подаче уведомления в Роскомнадзор: <strong>не подтверждены</strong>.</p>
+    {{requisitesNotice}}
+    <p>Сведения о подаче уведомления в Роскомнадзор: <strong>{{roskomnadzorStatus}}</strong>.</p>
     <p>Документы опубликованы: <time datetime="2026-09-25">25 сентября 2026 года</time>.</p>
   </div>
 </section>

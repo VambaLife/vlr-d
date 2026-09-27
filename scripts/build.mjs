@@ -211,9 +211,44 @@ async function writeInfrastructure({ site, pageDefinitions, properties, outputFi
   return ['.htaccess', 'nginx.conf', 'assets/config/csp-script-hashes.conf', 'robots.txt', 'sitemap.xml'];
 }
 
+// Operator details live in src/data/site.json; templates render them through
+// tokens so a single edit propagates to /requisites.html and the footer.
+// Nothing here invents a value: an empty field renders as "Не подтверждено"
+// and the not-ready notice stays visible until requisitesVerified is set.
+function requisitesTokens(site) {
+  const unconfirmed = 'Не подтверждено';
+  const field = (value) => {
+    const text = value === null || value === undefined ? '' : String(value).trim();
+    return text || unconfirmed;
+  };
+  const name = field(site.legalName);
+  const ogrn = field(site.ogrn);
+  const inn = field(site.inn);
+  const kpp = field(site.kpp);
+  const address = field(site.address);
+  const known = [name, ogrn, inn, kpp, address].filter((part) => part !== unconfirmed);
+  return {
+    operatorName: name,
+    operatorOgrn: ogrn,
+    operatorInn: inn,
+    operatorKpp: kpp,
+    operatorAddress: address,
+    operatorSummary: known.length
+      ? `Оператор: ${known.join(', ')}.`
+      : 'Реквизиты оператора уточняются.',
+    roskomnadzorStatus: site.roskomnadzorSubmitted ? 'подтверждено' : 'не подтверждено',
+    requisitesLead: site.requisitesVerified
+      ? 'Сведения об операторе сайта и его контактные данные.'
+      : 'Документ подготовлен для публикации только после ввода и проверки юридических сведений.',
+    requisitesNotice: site.requisitesVerified
+      ? ''
+      : '<p class="data-notice">Публикация фиктивных реквизитов запрещена. До заполнения полей страница не готова к production-выпуску.</p>'
+  };
+}
+
 async function main() {
   await ensureMediaAssets();
-  const [site, properties, pageDefinitions, faqs, layout, header, footer, cookieBanner, overlays, lightbox, criticalSource, cssSource, jsSource] = await Promise.all([
+  const [site, properties, pageDefinitions, faqs, layout, header, footerTemplate, cookieBanner, overlays, lightbox, criticalSource, cssSource, jsSource] = await Promise.all([
     readJson('src/data/site.json'),
     readJson('src/data/properties.json'),
     readJson('src/data/pages.json'),
@@ -242,10 +277,17 @@ async function main() {
   const tokens = {
     propertyCards,
     faqItems: renderFaqItems(faqs),
-    pageLinks: '',
-    categoryLinks: '',
-    propertyLinks: ''
+    ...requisitesTokens(site),
+    pageLinks: pageDefinitions
+      .filter((page) => !String(page.robots || '').includes('noindex'))
+      .map((page) => `<a href="${page.canonical}">${page.title.split(' — ')[0]}</a>`)
+      .join(''),
+    categoryLinks: categoryDefinitions().map((category) => `<a href="/properties/${category.key}.html">${category.title}</a>`).join(''),
+    propertyLinks: properties.map((property) => `<a href="/property/${property.slug}.html">${property.title}</a>`).join('')
   };
+  // The footer is substituted into the layout as a value, so replaceTokens never
+  // reaches the tokens inside it. Render it here, once the token set is final.
+  const footer = replaceTokens(footerTemplate, tokens);
   const outputFiles = [];
 
   for (const page of pageDefinitions) {
@@ -256,12 +298,6 @@ async function main() {
   }
 
   const indexPage = pageDefinitions.find((page) => page.key === 'home');
-  tokens.pageLinks = pageDefinitions
-    .filter((page) => !String(page.robots || '').includes('noindex'))
-    .map((page) => `<a href="${page.canonical}">${page.title.split(' — ')[0]}</a>`)
-    .join('');
-  tokens.categoryLinks = categoryDefinitions().map((category) => `<a href="/properties/${category.key}.html">${category.title}</a>`).join('');
-  tokens.propertyLinks = properties.map((property) => `<a href="/property/${property.slug}.html">${property.title}</a>`).join('');
   const sitemapPage = pageDefinitions.find((page) => page.key === 'sitemap');
   let sitemapContent = replaceTokens(templates.get('sitemap'), tokens);
   const sitemapBreadcrumbs = staticBreadcrumbs(sitemapPage);
