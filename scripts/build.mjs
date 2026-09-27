@@ -198,7 +198,7 @@ async function writeInfrastructure({ site, pageDefinitions, properties, outputFi
     '/properties/houses.html',
     '/properties/commercial.html',
     '/properties/rent.html',
-    ...properties.map((property) => `/property/${property.slug}.html`)
+    ...properties.filter((property) => property.verified).map((property) => `/property/${property.slug}.html`)
   ];
   const sitemapUrls = [...new Set([...indexablePageUrls, ...additionalUrls])];
   const lastModified = site.legalPublishedAt || new Date().toISOString().slice(0, 10);
@@ -313,7 +313,12 @@ async function main() {
       key: `property-${property.slug}`, output: `property/${property.slug}.html`, canonical: `/property/${property.slug}.html`,
       title: `${property.title} — карточка объекта недвижимости | ВЛР-Дмитров`,
       description: `Карточка объекта «${property.title}» на сайте ВЛР-Дмитров. Просмотрите подготовленную галерею, описание и контакты для уточнения информации. Характеристики уточняются.`,
-      bodyClass: 'page-property', robots: 'index, follow, max-image-preview:large'
+      bodyClass: 'page-property',
+      // Unverified drafts carry no address, price, area or photos, so indexing
+      // them would only dilute local search. They stay reachable for the call
+      // button, and writeInfrastructure() keeps them out of sitemap.xml by
+      // listing only verified slugs.
+      robots: property.verified ? 'index, follow, max-image-preview:large' : 'noindex, follow'
     };
     const similar = [...properties.slice(index + 1), ...properties.slice(0, index)];
     const propertyContent = renderPropertyPage(property, similar);

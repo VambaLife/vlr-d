@@ -38,6 +38,7 @@ const indexableErrorPages = new Set(['404.html', '500.html']);
 const redirects = new Set(['properties.html']);
 const titles = new Map();
 const canonicals = new Map();
+const indexableCanonicals = new Set();
 
 function check(condition, message) {
   if (!condition) failures.push(message);
@@ -138,19 +139,26 @@ async function checkHtml(file) {
   }
   if (titleMatch) {
     const title = decodeBasicEntities(titleMatch[1]);
-    check(!titles.has(title), `${file}: duplicate title with ${titles.get(title)}`);
-    titles.set(title, file);
-    if (!isRedirect && !indexableErrorPages.has(file)) check(title.length >= 50 && title.length <= 60, `${file}: title length ${title.length}, expected 50-60`);
+    // Unverified property drafts are noindex, follow. Search engines never see
+    // them, so unique/length rules for indexable pages must not gate them; the
+    // noindex tag itself is the guarantee that they stay out of the index.
+    const needsSeoGate = !noindex;
+    if (needsSeoGate) {
+      check(!titles.has(title), `${file}: duplicate title with ${titles.get(title)}`);
+      titles.set(title, file);
+      if (!isRedirect && !indexableErrorPages.has(file)) check(title.length >= 50 && title.length <= 60, `${file}: title length ${title.length}, expected 50-60`);
+    }
   }
   if (descriptionTag) {
     const description = decodeBasicEntities(descriptionTag.get('content') || '');
-    if (!isRedirect && !indexableErrorPages.has(file)) check(description.length >= 150 && description.length <= 160, `${file}: description length ${description.length}, expected 150-160`);
+    if (!noindex && !isRedirect && !indexableErrorPages.has(file)) check(description.length >= 150 && description.length <= 160, `${file}: description length ${description.length}, expected 150-160`);
   }
   if (canonicalTag) {
     const canonical = canonicalTag.get('href') || '';
     check(canonical.startsWith('https://'), `${file}: canonical must use https`);
     check(!canonicals.has(canonical), `${file}: duplicate canonical with ${canonicals.get(canonical)}`);
     canonicals.set(canonical, file);
+    if (!noindex && !isRedirect) indexableCanonicals.add(canonical);
     if (indexableErrorPages.has(file)) check(noindex, `${file}: error page must be noindex`);
   }
 
@@ -271,7 +279,15 @@ async function main() {
   check(robots.includes('Disallow: /api/'), 'robots.txt: API path is not disallowed');
   const sitemap = await text('sitemap.xml');
   const locations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
-  check(locations.length >= 20, `sitemap.xml: expected at least 20 URLs, got ${locations.length}`);
+  check(locations.length > 0, 'sitemap.xml: no URLs found');
+  // Stricter than an arbitrary minimum count: every indexable page must be
+  // listed, and no noindex page may be. Unverified property drafts are
+  // deliberately excluded because the build marks them noindex, follow.
+  const missingFromSitemap = [...indexableCanonicals].filter((url) => !locations.includes(url));
+  check(missingFromSitemap.length === 0, `sitemap.xml: indexable pages missing: ${missingFromSitemap.join(', ')}`);
+  const nonIndexableUrls = new Set([...canonicals.keys()].filter((url) => !indexableCanonicals.has(url)));
+  const leakedNoindex = locations.filter((url) => nonIndexableUrls.has(url));
+  check(leakedNoindex.length === 0, `sitemap.xml: noindex pages must not be listed: ${leakedNoindex.join(', ')}`);
   check(new Set(locations).size === locations.length, 'sitemap.xml: duplicate URLs found');
   check(locations.every((url) => url.startsWith('https://')), 'sitemap.xml: non-HTTPS URL found');
   check(!locations.some((url) => /\/(?:404|500)\.html$|\/properties\.html$/.test(url)), 'sitemap.xml: redirect/error page included');
