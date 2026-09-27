@@ -23,6 +23,7 @@
 # Backups and local archives
 /backup/*
 !/backup/.gitkeep
+!/backup/.htaccess
 *.zip
 *.tar
 *.tar.gz
